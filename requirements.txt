@@ -1,0 +1,13 @@
+# CPU-only PyTorch wheels (no CUDA) — this project runs on CPU.
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+ultralytics==8.3.0
+lapx==0.9.4                  # linear-assignment solver ByteTrack imports as `lap`
+opencv-python==4.10.0.84
+numpy==1.26.4
+scipy==1.13.1
+torch==2.3.1+cpu
+torchvision==0.18.1+cpu
+transformers==4.47.1              # 4.45+ required for Qwen2VLForConditionalGeneration
+accelerate==0.33.0
+qwen-vl-utils==0.0.8

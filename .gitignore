@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Virtual environment
+.venv/
+
+# IDE
+.idea/
+.vscode/
+
+# Model weights (auto-downloaded, documented as external asset)
+*.pt
+
+# Project caches (redirected third-party caches)
+.cache/
+
+# Input videos (not committed; see README for expected layout/source)
+Videos/
+
+# Outputs: keep JSON artifact, ignore heavy annotated videos
+outputs/*.mp4
