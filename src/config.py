@@ -123,6 +123,8 @@ INTERACTING_STRONG_PEAK_IOU = 0.15
 # physical event. Merge same-type spans that overlap or are at most this many
 # seconds apart and share a person or vehicle id; keep longest dwell / conf.
 MERGE_GAP_S = 1.0
+# Drop weak geometry proposals before Qwen (saves VLM calls; cuts FPs).
+MIN_INTERACTION_CONFIDENCE = 0.8
 
 # ---------------------------------------------------------------------------
 # VLM descriptions (Step 5)

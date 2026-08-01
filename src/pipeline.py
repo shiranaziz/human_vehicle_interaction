@@ -4,8 +4,9 @@ Owns heavy models once and runs Steps 3–6 per clip:
 
 1. Detect + track → tracklets
 2. Geometric interaction proposals (enter / exit / interacting)
-3. Optional Qwen describe + type filter (drops passing_by)
-4. Per-clip JSON export (right after Qwen) + optional annotated MP4
+3. Confidence gate (skip weak proposals before Qwen)
+4. Optional Qwen describe + type filter (drops passing_by)
+5. Per-clip JSON export (right after Qwen) + optional annotated MP4
 
 ``main.py`` should only configure settings and call :class:`InteractionPipeline`.
 """
@@ -115,6 +116,17 @@ class InteractionPipeline:
             print(
                 f"temporal NMS: geometry {n_before_merge} -> {len(accepted)} "
                 f"(gap≤{config.MERGE_GAP_S:.1f}s)"
+            )
+        # Gate on geometry confidence before Qwen so weak proposals never
+        # spend a VLM call (and do not reach the product JSON).
+        n_before_conf = len(accepted)
+        conf_thr = config.MIN_INTERACTION_CONFIDENCE
+        accepted = [i for i in accepted if i.confidence >= conf_thr]
+        if s.verbose and len(accepted) < n_before_conf:
+            print(
+                f"confidence gate: {n_before_conf} -> {len(accepted)} "
+                f"(conf≥{conf_thr:.2f}, skipped Qwen on "
+                f"{n_before_conf - len(accepted)})"
             )
 
         result = ClipResult(

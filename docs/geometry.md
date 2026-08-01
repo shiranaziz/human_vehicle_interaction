@@ -23,10 +23,12 @@ Inside `InteractionPipeline.process_clip` (`src/pipeline.py`):
 2. **Detect + track → tracklets** — `tracklets_from_video(..., model=self.tracker)` → person/vehicle `TrackletCollection`.
 3. **Geometry proposals** — `self.finder.find(collection, meta.fps, ...)` → list of `Interaction`.
 4. **Split** — `geometry_accepted` (`enter` / `exit` / `interacting`) vs `geometry_rejected` (`passing_by`).
-5. **Optional Qwen** — `describe_interactions(accepted, ...)` if `run_describe=True`.
-6. **Per-clip JSON** — `export_clip_json(result)` (uses kept described rows, else geometry accepted).
-7. **Optional annotated MP4** — `annotate_clip(..., interactions=result.for_viz)`.
-8. **Return** `ClipResult`.
+5. **Temporal NMS** — `merge_overlapping_interactions(accepted)` collapses track-fragment duplicates before VLM.
+6. **Confidence gate** — drop proposals with `confidence < MIN_INTERACTION_CONFIDENCE` (default `0.8`) so they never reach Qwen.
+7. **Optional Qwen** — `describe_interactions(accepted, ...)` if `run_describe=True` (merges again after type rewrite).
+8. **Per-clip JSON** — `export_clip_json(result)` (uses kept described rows, else geometry accepted).
+9. **Optional annotated MP4** — `annotate_clip(..., interactions=result.for_viz)`.
+10. **Return** `ClipResult`.
 
 Combined `outputs/interactions.json` is written later by `run()` → `export_json`. Models are loaded once in `__init__` and reused across clips.
 
@@ -330,6 +332,76 @@ Config knobs (`src/config.py`):
 
 ---
 
+## Temporal NMS (fragment merge)
+
+**Problem:** ByteTrack often **splits one physical event** into several person/vehicle IDs (occlusion, brief loss, ID switch). Geometry then emits many near-duplicate proposals for the same boarding / load / exit.
+
+**Function:** `merge_overlapping_interactions` in `src/interactions.py`  
+**Config:** `MERGE_GAP_S = 1.0` (seconds)
+
+### When it runs
+
+1. **After geometry, before Qwen** — `process_clip` merges `accepted` so VLM is not asked N times for one event.
+2. **Confidence gate (still before Qwen)** — drop any remaining proposal with `confidence < MIN_INTERACTION_CONFIDENCE` (default `0.8`).
+3. **After Qwen** — `merge_described_interactions` in `src/describe.py` re-runs the same merge on **kept** rows, using post-VLM types (fragments that only align after type rewrite still collapse). Filtered `passing_by` rows are left alone.
+
+### Link rule (same physical event)
+
+Two proposals are linked only if **all** of:
+
+| Condition | Rule |
+| --- | --- |
+| Same type | `enter` with `enter`, `exit` with `exit`, `interacting` with `interacting` |
+| Shared track | same `person_id` **or** same `vehicle_id` (either side can fragment) |
+| Temporally close | time spans overlap, **or** the gap between them is ≤ `MERGE_GAP_S` |
+
+Different types are **never** merged (e.g. exit then enter stay separate).
+
+### Winner vs suppressed
+
+Linked proposals form connected components. Each cluster keeps **one winner**:
+
+```text
+rank = (dwell_frames, confidence, span_duration)   # higher wins
+```
+
+(`dwell_frames` from overlap-near; falls back to `door_dwell_frames` if dwell was 0.)
+
+Suppressed siblings are **not** deleted from evidence — they are recorded on the winner:
+
+```text
+evidence["merged_from"] = [ {person_id, vehicle_id, time_span_s, confidence, dwell_frames}, ... ]
+evidence["merge_count"] = N   # cluster size including winner
+```
+
+Verbose log line:
+
+```text
+temporal NMS: geometry 4 -> 1 (gap≤1.0s)
+```
+
+Example (one load event, four track fragments → one kept row):
+
+```
+before:  (p21,v14) interacting 1.6–1.9s
+         (p24,v14) interacting 2.0–3.0s
+         (p24,v33) interacting 3.1–3.6s
+         (p24,v30) interacting 2.8–5.1s   ← winner (longest dwell / conf)
+after:   one interacting; merged_from lists the other three
+```
+
+Stack:
+
+```
+process_clip
+→ merge_overlapping_interactions(accepted)          # pre-VLM
+→ describe_interactions
+→ merge_described_interactions(described)           # post-VLM
+→ merge_overlapping_interactions(kept interactions)
+```
+
+---
+
 ## After geometry: frames for Qwen
 
 **Function:** `select_describe_frames`
@@ -342,12 +414,14 @@ From `near_frames`, pick up to `DESCRIBE_MAX_FRAMES` (default 3):
 
 (Temporal order, deduped.)
 
+If peak lands on start or end (roles collide), **backfill** mid near-frames from between the endpoints until the slot budget is filled — so Qwen usually still gets 3 crops when dwell allows.
+
 In `describe.py`:
 
 - geometry TYPE is injected into the prompt as a prior
 - weighted votes use `GEO_ENTER_EXIT_WEIGHT` (2.5) and `GEO_INTERACTING_WEIGHT` (1.5)
 - if geometry says enter and Qwen says exit (or reverse), **geometry wins**
-- soft Qwen `interacting` under geometry enter/exit also keeps the geometric boarding label
+- soft Qwen `interacting` is trusted (geometry already acted as prior; do not force enter/exit)
 
 ---
 
@@ -355,18 +429,18 @@ In `describe.py`:
 
 | File | Role |
 | --- | --- |
-| `src/interactions.py` | geometry Step 4 (`GeometricInteractionFinder`, metrics, classify) |
-| `src/config.py` | thresholds (`NEAR_*`, dwell, interacting, door, GEO weights) |
+| `src/interactions.py` | geometry Step 4 + temporal NMS (`merge_overlapping_interactions`) |
+| `src/config.py` | thresholds (`NEAR_*`, dwell, interacting, door, `MERGE_GAP_S`, `MIN_INTERACTION_CONFIDENCE`, GEO weights) |
 | `src/tracklets.py` | input tracklets |
-| `src/pipeline.py` | orchestrates detect → geometry → VLM → export |
-| `src/describe.py` | Qwen consumer of accepted geometry |
+| `src/pipeline.py` | orchestrates detect → geometry → temporal NMS → conf gate → VLM → export |
+| `src/describe.py` | Qwen consumer + post-VLM merge (`merge_described_interactions`) |
 | `main.py` | settings + clip selection |
 
 ---
 
 ## Quick reference: functions → stack
 
-| Work | Function | Stack under `find()` |
+| Work | Function | Stack under `find()` / pipeline |
 | --- | --- | --- |
 | Iterate pairs + temporal gate | `GeometricInteractionFinder.find` | `find → for person → for vehicle` |
 | Per-frame metrics | `_pair_metrics` | `find → _pair_metrics → iou/containment/center_distance` |
@@ -374,4 +448,5 @@ In `describe.py`:
 | Door-side near | `door_side_near` | `find → _classify_pair → door_side_near` |
 | Dwell + type | `_classify_pair` | `find → _classify_pair → trends / is_enter / is_exit / interacting` |
 | Drop walk-bys (optional) | `Interaction.is_accepted` | `find → filter if not include_passing_by` |
+| Collapse fragment events | `merge_overlapping_interactions` | `process_clip → merge…` and `describe → merge_described…` |
 | Describe frame pick | `select_describe_frames` | `describe_interactions → select_describe_frames` |

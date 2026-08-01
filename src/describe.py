@@ -738,14 +738,6 @@ def _build_explanation(
             f"\"{action_said}\". Enter/exit direction uses the geometric "
             f"track signature when it conflicts with Qwen."
         )
-    if evidence.get("vlm_interacting_kept_as_geo"):
-        return (
-            f"Kept as action={final_type or heuristic_type} because geometry "
-            f"classified {heuristic_type} (dwell_frames={dwell}, "
-            f"peak_containment={peak_c}), while Qwen only reported soft "
-            f"interacting ({how}, \"{action_said}\"). Prefer the specific "
-            f"boarding/alighting label from the track signature."
-        )
 
     return (
         f"Kept as action={vlm_type} because {how} and described the action as: "
@@ -780,9 +772,11 @@ def _apply_vlm_type(
 
     When geometry already has a decisive enter/exit and Qwen reports the
     opposite enter/exit, keep the pair but prefer the geometric direction —
-    single-frame VLM crops often confuse boarding with alighting. If geometry
-    says enter/exit and Qwen only says soft ``interacting``, keep the more
-    specific geometric boarding label.
+    single-frame VLM crops often confuse boarding with alighting.
+
+    Soft Qwen ``interacting`` is trusted as-is: geometry is already injected as
+    a prompt prior and vote weight, so forcing enter/exit over interacting
+    over-corrected door-loitering into false boarding/alighting.
     """
     heuristic = interaction.type
     evidence = dict(interaction.evidence)
@@ -807,9 +801,6 @@ def _apply_vlm_type(
     ):
         final_type = heuristic
         evidence["vlm_enter_exit_overridden"] = True
-    elif heuristic in _DECISIVE_TYPES and vlm_type == "interacting":
-        final_type = heuristic
-        evidence["vlm_interacting_kept_as_geo"] = True
     elif vlm_type in _INTERACTION_TYPES:
         final_type = vlm_type
     else:
@@ -1145,7 +1136,17 @@ if __name__ == "__main__":
     interactions = find_interactions(
         collection, meta.fps, include_passing_by=False
     )
-    print(f"clip={args.video.name} geometry_accepted={len(interactions)}")
+    n_geo = len(interactions)
+    interactions = [
+        i
+        for i in interactions
+        if i.confidence >= config.MIN_INTERACTION_CONFIDENCE
+    ]
+    print(
+        f"clip={args.video.name} geometry_accepted={n_geo} "
+        f"after_conf_gate={len(interactions)} "
+        f"(conf≥{config.MIN_INTERACTION_CONFIDENCE:.2f})"
+    )
     described = describe_interactions(
         interactions, collection, args.video, include_filtered=True
     )
