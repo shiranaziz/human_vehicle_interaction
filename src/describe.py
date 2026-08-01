@@ -38,6 +38,7 @@ from .interactions import (
     InteractionType,
     containment,
     find_interactions,
+    merge_overlapping_interactions,
     select_describe_frames,
 )
 from .io_utils import probe_video
@@ -1024,6 +1025,57 @@ def describe_interaction(
     return DescribedInteraction(interaction=interaction, description=desc)
 
 
+def merge_described_interactions(
+    described: list[DescribedInteraction],
+    *,
+    gap_s: float | None = None,
+) -> list[DescribedInteraction]:
+    """Temporal NMS on kept rows; Qwen-filtered rows pass through unchanged.
+
+    Re-runs :func:`merge_overlapping_interactions` on post-VLM types so fragments
+    that only align after type rewriting are still collapsed.
+    """
+    kept = [d for d in described if d.kept]
+    not_kept = [d for d in described if not d.kept]
+    if len(kept) <= 1:
+        return list(described)
+
+    by_key = {
+        (
+            d.interaction.person_id,
+            d.interaction.vehicle_id,
+            d.interaction.type,
+            d.interaction.frame_range,
+        ): d
+        for d in kept
+    }
+    merged_inter = merge_overlapping_interactions(
+        [d.interaction for d in kept], gap_s=gap_s
+    )
+    out = list(not_kept)
+    for inter in merged_inter:
+        key = (
+            inter.person_id,
+            inter.vehicle_id,
+            inter.type,
+            inter.frame_range,
+        )
+        base = by_key[key]
+        if inter.evidence is not base.interaction.evidence:
+            out.append(replace(base, interaction=inter))
+        else:
+            out.append(base)
+    out.sort(
+        key=lambda d: (
+            d.interaction.frame_range[0],
+            d.interaction.person_id,
+            d.interaction.vehicle_id,
+            d.interaction.type,
+        )
+    )
+    return out
+
+
 def describe_interactions(
     interactions: list[Interaction],
     collection: TrackletCollection,
@@ -1063,6 +1115,7 @@ def describe_interactions(
         )
         for inter in accepted
     ]
+    described = merge_described_interactions(described)
     if include_filtered:
         return described
     return [d for d in described if d.kept]

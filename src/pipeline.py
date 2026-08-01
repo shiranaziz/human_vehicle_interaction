@@ -18,7 +18,11 @@ from typing import Sequence
 from . import config
 from .describe import DescribedInteraction, QwenDescriber, describe_interactions
 from .detect_track import DetectorTracker
-from .interactions import GeometricInteractionFinder, Interaction
+from .interactions import (
+    GeometricInteractionFinder,
+    Interaction,
+    merge_overlapping_interactions,
+)
 from .io_utils import VideoMetadata, probe_video
 from .output import InteractionExporter
 from .tracklets import TrackletCollection, tracklets_from_video
@@ -102,6 +106,16 @@ class InteractionPipeline:
         )
         accepted = [i for i in interactions if i.is_accepted]
         rejected = [i for i in interactions if not i.is_accepted]
+        # Collapse track-fragment duplicates before VLM (same type + shared
+        # person/vehicle id, overlapping / within MERGE_GAP_S).
+        # describe_interactions merges again after Qwen if types are rewritten.
+        n_before_merge = len(accepted)
+        accepted = merge_overlapping_interactions(accepted)
+        if s.verbose and len(accepted) < n_before_merge:
+            print(
+                f"temporal NMS: geometry {n_before_merge} -> {len(accepted)} "
+                f"(gap≤{config.MERGE_GAP_S:.1f}s)"
+            )
 
         result = ClipResult(
             clip_id=video_path.stem,

@@ -119,6 +119,11 @@ INTERACTING_MIN_PEAK_IOU = 0.08
 INTERACTING_STRONG_PEAK_CONTAINMENT = 0.55
 INTERACTING_STRONG_PEAK_IOU = 0.15
 
+# Temporal NMS: track ID fragmentation often yields several proposals for one
+# physical event. Merge same-type spans that overlap or are at most this many
+# seconds apart and share a person or vehicle id; keep longest dwell / conf.
+MERGE_GAP_S = 1.0
+
 # ---------------------------------------------------------------------------
 # VLM descriptions (Step 5)
 # ---------------------------------------------------------------------------

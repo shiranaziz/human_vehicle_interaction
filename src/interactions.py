@@ -17,9 +17,10 @@ Thresholds live in :mod:`src.config` and are tuned in Step 7.
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass, field
+from collections import defaultdict
+from dataclasses import dataclass, field, replace
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Sequence
 
 from . import config
 from .detect_track import DetectorTracker
@@ -192,8 +193,9 @@ def select_describe_frames(
 ) -> list[int]:
     """Pick up to ``max_frames`` near frames: start, peak-containment, end.
 
-    These are the frames Step 5 crops and sends to Qwen (and that visualization
-    highlights in yellow).
+    If peak lands on start or end, backfill a mid near-frame between the
+    endpoints so Qwen still gets more than two crops. These are the frames
+    Step 5 crops and sends to Qwen (and that visualization highlights in yellow).
     """
     near = interaction.near_frames
     if not near:
@@ -213,14 +215,14 @@ def select_describe_frames(
             best_c = c
             best_f = f
 
-    candidates = [near[0], best_f, near[-1]]
-    # Preserve temporal order, drop duplicates.
-    ordered: list[int] = []
-    for f in sorted(set(candidates)):
-        ordered.append(f)
-    if len(ordered) > max_frames:
-        ordered = ordered[:max_frames]
-    return ordered
+    ordered = sorted({near[0], best_f, near[-1]})
+    # Peak often equals start/end; fill remaining slots from between them.
+    between = [f for f in near[1:-1] if f not in ordered]
+    while between and len(ordered) < max_frames:
+        pick = between[len(between) // 2]
+        ordered = sorted(set(ordered) | {pick})
+        between = [f for f in between if f != pick]
+    return ordered[:max_frames]
 
 
 # ---------------------------------------------------------------------------
@@ -553,6 +555,140 @@ def _classify_pair(
         near_frames=near_idxs,
         evidence=evidence,
     )
+
+
+# ---------------------------------------------------------------------------
+# Temporal NMS (fragment merge)
+# ---------------------------------------------------------------------------
+
+
+def _dwell_score(interaction: Interaction) -> int:
+    """Overlap dwell for ranking; door-side dwell only if there was no IoU near."""
+    ev = interaction.evidence or {}
+    dwell = int(ev.get("dwell_frames", 0) or 0)
+    if dwell > 0:
+        return dwell
+    return int(ev.get("door_dwell_frames", 0) or 0)
+
+
+def _merge_rank(interaction: Interaction) -> tuple[int, float, float]:
+    """Higher is better: dwell, then confidence, then span duration."""
+    t0, t1 = interaction.time_span_s
+    return (_dwell_score(interaction), float(interaction.confidence), float(t1 - t0))
+
+
+def _spans_close(
+    a0: float, a1: float, b0: float, b1: float, gap_s: float
+) -> bool:
+    """True if spans overlap or the gap between them is ≤ ``gap_s``."""
+    if a1 < b0:
+        return (b0 - a1) <= gap_s
+    if b1 < a0:
+        return (a0 - b1) <= gap_s
+    return True
+
+
+def _same_event_link(a: Interaction, b: Interaction, gap_s: float) -> bool:
+    """True if ``a``/``b`` look like fragments of one physical event.
+
+    Same TYPE, temporally close, and share a person track **or** vehicle track
+    (either side can fragment under occlusion).
+    """
+    if a.type != b.type:
+        return False
+    if a.person_id != b.person_id and a.vehicle_id != b.vehicle_id:
+        return False
+    a0, a1 = a.time_span_s
+    b0, b1 = b.time_span_s
+    return _spans_close(a0, a1, b0, b1, gap_s)
+
+
+def _connected_clusters(
+    items: Sequence[Interaction], gap_s: float
+) -> list[list[Interaction]]:
+    """Connected components under :func:`_same_event_link`."""
+    n = len(items)
+    if n == 0:
+        return []
+    parent = list(range(n))
+
+    def find(i: int) -> int:
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+
+    def union(i: int, j: int) -> None:
+        ri, rj = find(i), find(j)
+        if ri != rj:
+            parent[rj] = ri
+
+    for i in range(n):
+        for j in range(i + 1, n):
+            if _same_event_link(items[i], items[j], gap_s):
+                union(i, j)
+
+    buckets: dict[int, list[Interaction]] = defaultdict(list)
+    for i, item in enumerate(items):
+        buckets[find(i)].append(item)
+    return list(buckets.values())
+
+
+def merge_overlapping_interactions(
+    interactions: Sequence[Interaction],
+    *,
+    gap_s: float | None = None,
+) -> list[Interaction]:
+    """Merge fragment proposals that overlap or are near in time.
+
+    Track fragmentation often yields multiple person/vehicle IDs for one
+    physical event. Two proposals are linked when they share TYPE, are
+    temporally close (overlap or gap ≤ ``gap_s``), and share a person **or**
+    vehicle id. Each connected component keeps the member with the strongest
+    dwell/confidence; siblings go on ``evidence["merged_from"]``.
+
+    Different types (e.g. exit then enter) are never merged.
+    """
+    if not interactions:
+        return []
+    gap = float(config.MERGE_GAP_S if gap_s is None else gap_s)
+
+    # Partition by type first so enter/exit/interacting never mix.
+    by_type: dict[InteractionType, list[Interaction]] = defaultdict(list)
+    for inter in interactions:
+        by_type[inter.type].append(inter)
+
+    merged: list[Interaction] = []
+    for items in by_type.values():
+        for cluster in _connected_clusters(items, gap):
+            winner = max(cluster, key=_merge_rank)
+            if len(cluster) > 1:
+                suppressed = []
+                for other in cluster:
+                    if other is winner:
+                        continue
+                    suppressed.append(
+                        {
+                            "person_id": other.person_id,
+                            "vehicle_id": other.vehicle_id,
+                            "time_span_s": [
+                                round(other.time_span_s[0], 3),
+                                round(other.time_span_s[1], 3),
+                            ],
+                            "confidence": other.confidence,
+                            "dwell_frames": _dwell_score(other),
+                        }
+                    )
+                evidence = dict(winner.evidence)
+                evidence["merged_from"] = suppressed
+                evidence["merge_count"] = len(cluster)
+                winner = replace(winner, evidence=evidence)
+            merged.append(winner)
+
+    merged.sort(
+        key=lambda i: (i.frame_range[0], i.person_id, i.vehicle_id, i.type)
+    )
+    return merged
 
 
 class GeometricInteractionFinder:
