@@ -17,7 +17,18 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 VIDEOS_DIR = PROJECT_ROOT / "Videos"
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
+# Split product artifacts so videos / descriptions / eval stay separate.
+OUTPUTS_VIDEOS_DIR = OUTPUTS_DIR / "videos"
+OUTPUTS_DESCRIPTION_DIR = OUTPUTS_DIR / "description"
+OUTPUTS_EVAL_DIR = OUTPUTS_DIR / "eval_results"
 CACHE_DIR = PROJECT_ROOT / ".cache"
+
+for _out_sub in (
+    OUTPUTS_VIDEOS_DIR,
+    OUTPUTS_DESCRIPTION_DIR,
+    OUTPUTS_EVAL_DIR,
+):
+    _out_sub.mkdir(parents=True, exist_ok=True)
 
 # ---------------------------------------------------------------------------
 # Redirect third-party caches/config into the project so the pipeline runs

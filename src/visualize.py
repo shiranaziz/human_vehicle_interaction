@@ -150,11 +150,13 @@ def annotate_clip(
     If ``interactions`` is None and a collection is available, Step 4 is run
     automatically so yellow highlights still appear.
 
-    ``out_path`` defaults to ``outputs/<clip>_annotated.mp4``.
+    ``out_path`` defaults to ``outputs/videos/<clip>_annotated.mp4``.
     """
     video_path = Path(video_path)
     if out_path is None:
-        out_path = config.OUTPUTS_DIR / f"{video_path.stem}_annotated.mp4"
+        out_path = (
+            config.OUTPUTS_VIDEOS_DIR / f"{video_path.stem}_annotated.mp4"
+        )
     out_path = Path(out_path)
 
     meta = probe_video(video_path)

@@ -14,7 +14,8 @@ VERBOSE = True
 def main() -> None:
     run_evaluation(
         videos_dir=config.VIDEOS_DIR,
-        outputs_dir=config.OUTPUTS_DIR,
+        description_dir=config.OUTPUTS_DESCRIPTION_DIR,
+        eval_dir=config.OUTPUTS_EVAL_DIR,
         describer=None,
         iou_threshold=IOU_THRESHOLD,
         run_llm_judge=RUN_LLM_JUDGE,

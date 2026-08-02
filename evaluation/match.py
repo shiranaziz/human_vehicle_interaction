@@ -118,12 +118,12 @@ def load_pred_events(path: Path) -> list[PredEvent]:
 
 
 def discover_clip_pairs(
-    videos_dir: Path, outputs_dir: Path
+    videos_dir: Path, description_dir: Path
 ) -> list[tuple[str, Path, Path]]:
     """Return ``(clip_id, gt_path, pred_path)`` for clips that have both."""
     pairs: list[tuple[str, Path, Path]] = []
     for gt_path in sorted(videos_dir.glob("*.json")):
-        pred_path = outputs_dir / gt_path.name
+        pred_path = description_dir / gt_path.name
         if not pred_path.is_file():
             continue
         pairs.append((gt_path.stem, gt_path, pred_path))
@@ -175,12 +175,12 @@ def greedy_match(
 
 def match_all_clips(
     videos_dir: Path,
-    outputs_dir: Path,
+    description_dir: Path,
     iou_threshold: float = 0.2,
 ) -> list[ClipMatchResult]:
     results: list[ClipMatchResult] = []
     for clip_id, gt_path, pred_path in discover_clip_pairs(
-        videos_dir, outputs_dir
+        videos_dir, description_dir
     ):
         gts = load_gt_events(gt_path)
         preds = load_pred_events(pred_path)

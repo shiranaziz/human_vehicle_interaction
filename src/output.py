@@ -1,8 +1,8 @@
 """Step 6 — serialize kept interactions to the product JSON schema.
 
-Writes one JSON file per clip (``outputs/<clip_id>.json``) and optionally a
-combined ``outputs/interactions.json`` array. Only kept (non-passing_by)
-interactions are included.
+Writes one JSON file per clip (``outputs/description/<clip_id>.json``) and
+optionally a combined ``outputs/description/interactions.json`` array. Only
+kept (non-passing_by) interactions are included.
 """
 from __future__ import annotations
 
@@ -132,7 +132,7 @@ def build_clip_record(
 
 def clip_json_path(clip_id: str) -> Path:
     """Default path for a single-clip JSON artifact."""
-    return config.OUTPUTS_DIR / f"{clip_id}.json"
+    return config.OUTPUTS_DESCRIPTION_DIR / f"{clip_id}.json"
 
 
 class InteractionExporter:
@@ -155,7 +155,7 @@ class InteractionExporter:
         record: dict[str, Any],
         path: str | Path | None = None,
     ) -> Path:
-        """Write one clip document to ``outputs/<clip_id>.json``."""
+        """Write one clip document to ``outputs/description/<clip_id>.json``."""
         out = Path(path) if path is not None else clip_json_path(
             str(record.get("clip_id", "clip"))
         )
@@ -166,11 +166,11 @@ class InteractionExporter:
         records: Sequence[dict[str, Any]],
         path: str | Path | None = None,
     ) -> Path:
-        """Write the clip-record array to ``outputs/interactions.json``."""
+        """Write the clip-record array to ``outputs/description/interactions.json``."""
         out = (
             Path(path)
             if path is not None
-            else config.OUTPUTS_DIR / "interactions.json"
+            else config.OUTPUTS_DESCRIPTION_DIR / "interactions.json"
         )
         return self._dump(list(records), out)
 

@@ -5,7 +5,7 @@ Owns heavy models once and runs Steps 3–6 per clip:
 1. Detect + track → tracklets
 2. Geometric interaction proposals (enter / exit / interacting)
 3. Confidence gate (skip weak proposals before Qwen)
-4. Optional Qwen describe + type filter (drops passing_by)
+4. Qwen describe + type filter (drops passing_by)
 5. Per-clip JSON export (right after Qwen) + optional annotated MP4
 
 ``main.py`` should only configure settings and call :class:`InteractionPipeline`.
@@ -35,7 +35,6 @@ class PipelineSettings:
     """Run-time knobs (edit from ``main.py`` or construct in tests)."""
 
     stride: int = config.FRAME_STRIDE
-    run_describe: bool = True
     write_annotated: bool = True
     show_passing_by: bool = True
     show_vlm_filtered: bool = True
@@ -65,17 +64,13 @@ class ClipResult:
         return [d for d in self.described if not d.kept]
 
     @property
-    def for_json(self) -> Sequence[DescribedInteraction | Interaction]:
-        """Rows that go into the product JSON (kept described, else geometry)."""
-        if self.described:
-            return self.kept
-        return self.geometry_accepted
+    def for_json(self) -> Sequence[DescribedInteraction]:
+        """Rows that go into the product JSON (kept after Qwen filter)."""
+        return self.kept
 
     @property
     def for_viz(self) -> list[Interaction]:
-        if self.described:
-            return [d.interaction for d in self.kept]
-        return self.geometry_accepted
+        return [d.interaction for d in self.kept]
 
 
 class InteractionPipeline:
@@ -90,9 +85,7 @@ class InteractionPipeline:
         self.tracker = DetectorTracker()
         self.finder = GeometricInteractionFinder()
         self.exporter = InteractionExporter()
-        self.describer: QwenDescriber | None = (
-            QwenDescriber() if self.settings.run_describe else None
-        )
+        self.describer = QwenDescriber()
 
     def process_clip(self, video_path: str | Path) -> ClipResult:
         """Run the full pipeline on a single MP4."""
@@ -141,19 +134,18 @@ class InteractionPipeline:
         if s.verbose:
             self._print_geometry(result)
 
-        if self.describer is not None:
-            result.described = describe_interactions(
-                accepted,
-                collection,
-                video_path,
-                describer=self.describer,
-                include_filtered=True,
-            )
-            if s.verbose:
-                self._print_described(result)
+        result.described = describe_interactions(
+            accepted,
+            collection,
+            video_path,
+            describer=self.describer,
+            include_filtered=True,
+        )
+        if s.verbose:
+            self._print_described(result)
 
-        # Persist this clip as soon as Qwen (or geometry-only) is done,
-        # before annotation / the next video.
+        # Persist this clip as soon as Qwen is done, before annotation /
+        # the next video.
         result.json_path = self.export_clip_json(result)
 
         if s.write_annotated:
@@ -180,7 +172,7 @@ class InteractionPipeline:
         result: ClipResult,
         path: str | Path | None = None,
     ) -> Path:
-        """Write ``outputs/<clip_id>.json`` for one finished clip."""
+        """Write ``outputs/description/<clip_id>.json`` for one finished clip."""
         record = self.exporter.build_clip_record(
             result.clip_id,
             result.meta,
@@ -198,7 +190,7 @@ class InteractionPipeline:
         results: Sequence[ClipResult],
         path: str | Path | None = None,
     ) -> Path:
-        """Write combined ``outputs/interactions.json`` from clip results."""
+        """Write combined ``outputs/description/interactions.json``."""
         records = [
             self.exporter.build_clip_record(
                 r.clip_id,

@@ -19,7 +19,6 @@ RUN_EVAL = True
 
 SETTINGS = PipelineSettings(
     stride=config.FRAME_STRIDE,
-    run_describe=True,
     write_annotated=True,
     show_passing_by=True,
     show_vlm_filtered=True,
@@ -43,10 +42,11 @@ def main() -> None:
     if RUN_EVAL:
         run_evaluation(
             videos_dir=config.VIDEOS_DIR,
-            outputs_dir=config.OUTPUTS_DIR,
+            description_dir=config.OUTPUTS_DESCRIPTION_DIR,
+            eval_dir=config.OUTPUTS_EVAL_DIR,
             describer=pipeline.describer,
             iou_threshold=0.2,
-            run_llm_judge=SETTINGS.run_describe,
+            run_llm_judge=True,
             verbose=SETTINGS.verbose,
         )
 

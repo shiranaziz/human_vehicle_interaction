@@ -21,5 +21,8 @@ __pycache__/
 Videos/*
 !Videos/*.json
 
-# Outputs: keep JSON artifact, ignore heavy annotated videos
-outputs/*.mp4
+# Local documentation (not versioned)
+docs/
+
+# Annotated videos are heavy; keep JSON description / eval artifacts.
+outputs/videos/

@@ -4,6 +4,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from src import config
 from src.describe import QwenDescriber
 
 from .judge import ensure_describer, judge_pairs
@@ -19,8 +20,9 @@ from .report import (
 
 def run_evaluation(
     videos_dir: str | Path,
-    outputs_dir: str | Path,
+    description_dir: str | Path,
     *,
+    eval_dir: str | Path | None = None,
     describer: QwenDescriber | None = None,
     iou_threshold: float = 0.2,
     run_llm_judge: bool = True,
@@ -29,12 +31,20 @@ def run_evaluation(
     """Match GT to predictions, score ranks 1–3, write report artifacts.
 
     Clips without a GT sidecar or without a prediction JSON are skipped.
+    Predictions are read from ``description_dir``; reports go to ``eval_dir``
+    (defaults to ``config.OUTPUTS_EVAL_DIR``).
     """
     videos_dir = Path(videos_dir)
-    outputs_dir = Path(outputs_dir)
+    description_dir = Path(description_dir)
+    eval_dir = (
+        Path(eval_dir)
+        if eval_dir is not None
+        else config.OUTPUTS_EVAL_DIR
+    )
+    eval_dir.mkdir(parents=True, exist_ok=True)
 
     clips = match_all_clips(
-        videos_dir, outputs_dir, iou_threshold=iou_threshold
+        videos_dir, description_dir, iou_threshold=iou_threshold
     )
     if verbose:
         print(
@@ -59,8 +69,8 @@ def run_evaluation(
     report = build_report(
         clips, iou_threshold=iou_threshold, ran_llm_judge=judged
     )
-    json_path = write_report_json(report, outputs_dir / "eval_report.json")
-    csv_path = write_pairs_csv(clips, outputs_dir / "eval_pairs.csv")
+    json_path = write_report_json(report, eval_dir / "eval_report.json")
+    csv_path = write_pairs_csv(clips, eval_dir / "eval_pairs.csv")
 
     if verbose:
         print_summary(report)
