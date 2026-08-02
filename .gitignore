@@ -16,8 +16,10 @@ __pycache__/
 # Project caches (redirected third-party caches)
 .cache/
 
-# Input videos (not committed; see README for expected layout/source)
-Videos/
+# Input videos (not committed; see README for expected layout/source).
+# Keep GT annotations (Videos/*.json) versioned for offline eval.
+Videos/*
+!Videos/*.json
 
 # Outputs: keep JSON artifact, ignore heavy annotated videos
 outputs/*.mp4

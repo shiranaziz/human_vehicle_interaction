@@ -92,17 +92,18 @@ def _connection_type_prompt(heuristic_type: InteractionType) -> str:
         "- interacting = real contact/use that is not boarding or alighting "
         "(opening trunk/hood/door, loading or unloading items, taking a blanket/"
         "bag/object from the vehicle, leaning into cabin).\n"
-        "- passing_by = walking or standing near with no vehicle-directed action.\n"
+        "- passing_by = walking or standing near with no vehicle-directed action "
+        "(includes standing at a door without opening it, loading, or boarding).\n"
         "Do not guess exit just because a door is open; prefer enter when the "
         "person is outside and moving toward/into the door.\n"
         "Reply in EXACTLY three lines:\n"
         "TYPE: <enter|exit|interacting|passing_by>\n"
         "ACTION: <short verb phrase, e.g. entering driver door, exiting rear door, "
         "opening trunk, loading bags, unloading items, taking blanket from car, "
-        "standing at door, walking past>\n"
+        "walking past, standing near>\n"
         "CONNECTION: <one short line on the human-vehicle relationship>\n"
-        "Use TYPE=passing_by and ACTION=walking past only if the image clearly "
-        "shows no enter/exit/door/trunk/object contact."
+        "Use TYPE=passing_by when the person is only standing near / at the door "
+        "with no clear enter/exit/trunk/object contact."
     )
 
 # Default ACTION phrases when Qwen omits the ACTION line.
@@ -461,6 +462,48 @@ _ACTION_RE = re.compile(
 _CONN_RE = re.compile(r"CONNECTION\s*:\s*(.+)", re.IGNORECASE)
 
 
+# Contact verbs that make "standing at door" a real interaction, not a walk-by.
+_CONTACT_ACTION_MARKERS = (
+    "opening trunk",
+    "opening hood",
+    "opening door",
+    "loading",
+    "unloading",
+    "taking out",
+    "taking a",
+    "removing",
+    "putting in",
+    "blanket",
+    "leaning into",
+    "boarding",
+    "entering",
+    "exiting",
+    "getting in",
+    "getting out",
+)
+_WEAK_STANDING_MARKERS = (
+    "standing at",
+    "standing near",
+    "standing by",
+    "at the door",
+    "waiting",
+    "observing",
+)
+
+
+def _has_contact_action(text: str) -> bool:
+    low = text.lower()
+    return any(p in low for p in _CONTACT_ACTION_MARKERS)
+
+
+def _is_weak_standing_text(text: str) -> bool:
+    """True for door-loitering phrases with no load/board/trunk contact verb."""
+    low = text.lower()
+    if _has_contact_action(low):
+        return False
+    return any(p in low for p in _WEAK_STANDING_MARKERS)
+
+
 def _infer_type_from_text(text: str) -> InteractionType | None:
     """Best-effort TYPE from free-text ACTION/CONNECTION when TYPE line is missing."""
     low = text.lower()
@@ -473,8 +516,14 @@ def _infer_type_from_text(text: str) -> InteractionType | None:
             "passing_by",
             "no interaction",
             "without any",
+            "talking on phone",
+            "on their phone",
+            "on the phone",
         )
     ):
+        return "passing_by"
+    # Standing at/near a door with no contact verb is a walk-by, not interacting.
+    if _is_weak_standing_text(low):
         return "passing_by"
     if any(p in low for p in ("exiting", "exits", "getting out", "leaves the")):
         return "exit"
@@ -492,8 +541,6 @@ def _infer_type_from_text(text: str) -> InteractionType | None:
             "removing",
             "putting in",
             "blanket",
-            "standing at",
-            "at the door",
             "leaning into",
             "interacting",
         )
@@ -774,9 +821,13 @@ def _apply_vlm_type(
     opposite enter/exit, keep the pair but prefer the geometric direction —
     single-frame VLM crops often confuse boarding with alighting.
 
-    Soft Qwen ``interacting`` is trusted as-is: geometry is already injected as
-    a prompt prior and vote weight, so forcing enter/exit over interacting
-    over-corrected door-loitering into false boarding/alighting.
+    When geometry says enter/exit and Qwen softens to ``interacting``, keep the
+    geometric boarding/alighting label (still-frame Qwen often says "loading"
+    / "opening trunk" for real enters/exits).
+
+    Door-side geometry enters are only kept when Qwen also says ``enter`` —
+    truncated-box boarding is rare, and door-side + "opening trunk" is a
+    common FP.
     """
     heuristic = interaction.type
     evidence = dict(interaction.evidence)
@@ -790,6 +841,16 @@ def _apply_vlm_type(
             True,
         )
 
+    # Door-side path: require Qwen enter confirmation.
+    if (
+        filter_type
+        and evidence.get("proposal_reason")
+        == "door_side_boarding_truncated_vehicle"
+        and vlm_type != "enter"
+    ):
+        evidence["rejected_reason"] = "door_side_without_qwen_enter"
+        vlm_type = "passing_by"
+
     kept = not (filter_type and vlm_type == "passing_by")
     # Even when filtered out, surface the VLM label on the object for logs.
     if not kept:
@@ -801,6 +862,10 @@ def _apply_vlm_type(
     ):
         final_type = heuristic
         evidence["vlm_enter_exit_overridden"] = True
+    elif heuristic in _DECISIVE_TYPES and vlm_type == "interacting":
+        # Track lifetime > still-frame "loading/trunk" paraphrase.
+        final_type = heuristic
+        evidence["vlm_interacting_overridden"] = True
     elif vlm_type in _INTERACTION_TYPES:
         final_type = vlm_type
     else:
@@ -922,6 +987,19 @@ def describe_interaction(
         else:
             connection = _aggregate(connection_texts, peak_connection)
             action_detail = _aggregate(action_texts, peak_action)
+        # Door-loitering / phone: Qwen often says TYPE=interacting with a
+        # non-contact ACTION while geometry prior keeps the score above
+        # passing_by. Trust the free-text ACTION/CONNECTION for filtering.
+        if filter_type and vlm_type in _INTERACTION_TYPES:
+            text_type = _infer_type_from_text(f"{action_detail} {connection}")
+            if text_type == "passing_by":
+                vlm_type = "passing_by"
+                type_scores = {
+                    **type_scores,
+                    "passing_by": round(
+                        float(type_scores.get("passing_by", 0.0)) + 0.01, 3
+                    ),
+                }
         # Stash scores before apply so explanations can read them.
         interaction = replace(
             interaction,

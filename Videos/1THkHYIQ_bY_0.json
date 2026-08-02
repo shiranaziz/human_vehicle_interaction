@@ -1,0 +1,12 @@
+{
+  "clip_id": "1THkHYIQ_bY_0",
+  "interactions": [
+    {
+      "interaction_id": 1,
+      "type": "interacting",
+      "time_span_s": [0, 8],
+      "vehicle_type": "car",
+      "notes": "A man takes a blanket off the car"
+    }
+  ]
+}

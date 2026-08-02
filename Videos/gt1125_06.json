@@ -1,0 +1,19 @@
+{
+  "clip_id": "gt1125_06",
+  "interactions": [
+    {
+      "interaction_id": 1,
+      "type": "enter",
+      "time_span_s": [7, 11],
+      "vehicle_type": "car",
+      "notes": "A man enters the car"
+    },
+    {
+      "interaction_id": 2,
+      "type": "enter",
+      "time_span_s": [10, 13],
+      "vehicle_type": "car",
+      "notes": "A man enters the car"
+    }
+  ]
+}

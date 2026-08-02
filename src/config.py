@@ -91,33 +91,32 @@ NEAR_DOOR_GAP_FRAC = 0.45
 MIN_DOOR_ENTER_FRAMES = 3
 
 # Motion / signature checks (enter vs exit vs passing-by)
-APPROACH_CONTAINMENT_DELTA = 0.08  # containment rise over near span → approaching
-LEAVE_CONTAINMENT_DELTA = 0.08     # containment drop over near span → leaving
-# Max fraction of person-track lifetime that may still be "near" at the end
-# for an exit (person should leave the vehicle zone).
-EXIT_END_NEAR_FRAC = 0.25
-# Min fraction of person-track lifetime that must be "near" at the start
-# for an exit (person appears already at the vehicle).
-EXIT_START_NEAR_FRAC = 0.35
-# Same idea for enter: nearness concentrated at the end of the person track.
-ENTER_END_NEAR_FRAC = 0.35
-ENTER_START_NEAR_FRAC = 0.25
-# Min fraction of the enter end-window that must be near (hardcoded 0.5 was too
-# strict for long approach tracks that only board in the last seconds).
+LEAVE_CONTAINMENT_DELTA = 0.08  # containment drop over near span → leaving
+# Person-track window sizes for nearness concentration checks:
+#   focus = boarding/alighting side (enter: end of track; exit: start)
+#   other = opposite side (used to require nearness is not uniform)
+NEAR_FOCUS_FRAC = 0.35
+NEAR_OTHER_FRAC = 0.25
+# Min fraction of the enter end-window that must be near.
 ENTER_MIN_END_NEAR_RATIO = 0.5
+# Min overlap-near frames for a geometry enter (short curb fragments → FPs).
+MIN_ENTER_DWELL_FRAMES = 8
 
 # Soft "interacting" proposals: proximity without an enter/exit signature
 # (e.g. trunk/load/unload/taking items). Two tiers keep walk-bys out of the
 # VLM queue while still recalling short grab/unload actions:
-#   - sustained: longer dwell + moderate overlap
-#   - strong:    MIN_DWELL + tight overlap (blanket/bag from car)
+#   - sustained: longer dwell + moderate overlap + non-trivial IoU
+#   - strong:    MIN_DWELL + tight containment AND IoU (blanket/bag from car)
 # Qwen still filters passing_by.
 INTERACTING_MIN_DWELL_FRAMES = 10  # typically ~2× MIN_DWELL_FRAMES
 INTERACTING_MIN_PEAK_CONTAINMENT = 0.35
-INTERACTING_MIN_PEAK_IOU = 0.08
-# Short-dwell tier: requires stronger contact than the sustained tier.
+INTERACTING_MIN_PEAK_IOU = 0.05
+# Short-dwell tier: requires BOTH tight containment and non-trivial IoU.
+# Containment-alone (person box inside a huge truncated vehicle) is a common
+# walk-by FP on crowded curb clips (e.g. gt1125_06); real grab/unload actions
+# still show measurable IoU (blanket take ≈ 0.46).
 INTERACTING_STRONG_PEAK_CONTAINMENT = 0.55
-INTERACTING_STRONG_PEAK_IOU = 0.15
+INTERACTING_STRONG_PEAK_IOU = 0.20
 
 # Temporal NMS: track ID fragmentation often yields several proposals for one
 # physical event. Merge same-type spans that overlap or are at most this many

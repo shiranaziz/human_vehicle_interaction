@@ -1,0 +1,163 @@
+{
+  "clip_id": "NmlzoaDcOuI_1",
+  "video_metadata": {
+    "fps": 6.0,
+    "frame_count": 108,
+    "resolution": [
+      1280,
+      720
+    ],
+    "duration_s": 18.0
+  },
+  "interactions": [
+    {
+      "interaction_id": 1,
+      "type": "interacting",
+      "connection": "The person is interacting with the vehicle by opening the trunk, which is a common action when loading or unloading items.",
+      "person": {
+        "track_id": 197,
+        "description": "A middle-aged woman wearing a white shirt, black pants, and sandals, with sunglasses on her head.",
+        "representative_bbox": [
+          335.5,
+          161.9,
+          173.9,
+          299.7
+        ]
+      },
+      "vehicle": {
+        "track_id": 175,
+        "type": "car",
+        "description": "A silver sedan with a visible license plate."
+      },
+      "frame_range": [
+        12,
+        36
+      ],
+      "time_span_s": [
+        2.0,
+        6.0
+      ],
+      "confidence": 0.9,
+      "evidence": {
+        "peak_containment": 1.0,
+        "peak_iou": 0.276,
+        "dwell_frames": 25,
+        "door_dwell_frames": 0,
+        "track_terminated_near": true,
+        "track_started_near": true,
+        "containment_trend": -0.165,
+        "distance_trend": -27.095,
+        "start_near_frac": 1.0,
+        "end_near_frac": 1.0,
+        "proposal_reason": "sustained_proximity_no_enter_exit",
+        "type_scores": {
+          "interacting": 5.0
+        },
+        "appearance_person_frame": 12,
+        "appearance_vehicle_frame": 24,
+        "heuristic_type": "interacting",
+        "vlm_type": "interacting",
+        "explanation": "Kept as action=interacting because weighted TYPE=interacting (votes interacting×3; scores interacting=5.0; geometry prior=interacting) and described the action as: \"opening trunk\". Geometry proposed type=interacting (dwell_frames=25, peak_containment=1.0). The action label comes from Qwen + geometry.",
+        "action": "interacting",
+        "action_detail": "opening trunk",
+        "qwen_connection": "The person is interacting with the vehicle by opening the trunk, which is a common action when loading or unloading items.",
+        "qwen_votes": [
+          {
+            "frame": 12,
+            "type": "interacting",
+            "action": "opening trunk",
+            "connection": "The person is interacting with the vehicle by opening the trunk, which is a common action when loading or unloading items."
+          },
+          {
+            "frame": 24,
+            "type": "interacting",
+            "action": "opening trunk",
+            "connection": "The person is interacting with the vehicle by opening the trunk, which is a common action when loading or unloading items."
+          },
+          {
+            "frame": 36,
+            "type": "interacting",
+            "action": "opening trunk",
+            "connection": "The person is interacting with the vehicle by opening the trunk, which is a common action when loading or unloading items."
+          }
+        ]
+      }
+    },
+    {
+      "interaction_id": 2,
+      "type": "exit",
+      "connection": "The person is alighting from the car, stepping out of the driver's door.",
+      "person": {
+        "track_id": 229,
+        "description": "A woman wearing a pink floral top, white pants, and black shoes. She appears to be in her late 30s to early 40s.",
+        "representative_bbox": [
+          443.3,
+          287.0,
+          134.9,
+          431.0
+        ]
+      },
+      "vehicle": {
+        "track_id": 175,
+        "type": "car",
+        "description": "A silver sedan."
+      },
+      "frame_range": [
+        92,
+        102
+      ],
+      "time_span_s": [
+        15.333,
+        17.0
+      ],
+      "confidence": 0.853,
+      "evidence": {
+        "peak_containment": 0.413,
+        "peak_iou": 0.107,
+        "dwell_frames": 11,
+        "door_dwell_frames": 4,
+        "track_terminated_near": false,
+        "track_started_near": true,
+        "containment_trend": -0.02,
+        "distance_trend": 1.363,
+        "start_near_frac": 1.0,
+        "end_near_frac": 0.167,
+        "type_scores": {
+          "enter": 1.0,
+          "passing_by": 1.5,
+          "interacting": 1.0,
+          "exit": 2.5
+        },
+        "appearance_person_frame": 102,
+        "appearance_vehicle_frame": 101,
+        "heuristic_type": "exit",
+        "vlm_type": "enter",
+        "vlm_enter_exit_overridden": true,
+        "explanation": "Kept as action=exit because geometry classified exit (dwell_frames=11, peak_containment=0.413), while aggregation gave weighted TYPE=enter (votes enter×1, interacting×1, passing_by×1; scores enter=1.0, exit=2.5, interacting=1.0, passing_by=1.5; geometry prior=exit) with \"alighting\". Enter/exit direction uses the geometric track signature when it conflicts with Qwen.",
+        "action": "exit",
+        "action_detail": "alighting",
+        "qwen_connection": "The person is alighting from the car, stepping out of the driver's door.",
+        "qwen_votes": [
+          {
+            "frame": 92,
+            "type": "enter",
+            "action": "alighting",
+            "connection": "The person is alighting from the car, stepping out of the driver's door."
+          },
+          {
+            "frame": 101,
+            "type": "passing_by",
+            "action": "talking on phone",
+            "connection": "The person is interacting with the vehicle by talking on their phone, which is a common activity while walking near the car."
+          },
+          {
+            "frame": 102,
+            "type": "interacting",
+            "action": "interacting",
+            "connection": "The person is interacting with the vehicle, possibly loading or unloading items."
+          }
+        ]
+      }
+    }
+  ]
+}

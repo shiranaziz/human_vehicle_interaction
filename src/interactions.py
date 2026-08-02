@@ -388,21 +388,20 @@ def _classify_pair(
     )
 
     start_near_frac = _frac_near_in_window(
-        person, near_set, config.EXIT_START_NEAR_FRAC, from_start=True
+        person, near_set, config.NEAR_FOCUS_FRAC, from_start=True
     )
     end_near_frac = _frac_near_in_window(
-        person, near_set, config.ENTER_END_NEAR_FRAC, from_start=False
+        person, near_set, config.NEAR_FOCUS_FRAC, from_start=False
     )
     early_end_near = _frac_near_in_window(
-        person, near_set, config.EXIT_END_NEAR_FRAC, from_start=False
+        person, near_set, config.NEAR_OTHER_FRAC, from_start=False
     )
     late_start_near = _frac_near_in_window(
-        person, near_set, config.ENTER_START_NEAR_FRAC, from_start=True
+        person, near_set, config.NEAR_OTHER_FRAC, from_start=True
     )
 
     cont_trend = _containment_trend(near) if near else 0.0
     dist_trend = _distance_trend(near) if near else _distance_trend(door)
-    approaching = cont_trend >= config.APPROACH_CONTAINMENT_DELTA or dist_trend < 0
     leaving = cont_trend <= -config.LEAVE_CONTAINMENT_DELTA or dist_trend > 0
 
     evidence = {
@@ -425,14 +424,14 @@ def _classify_pair(
     door_idxs = [m.frame_idx for m in door]
     gap_trend = _door_gap_trend(door)
     start_door_frac = _frac_door_in_window(
-        person, vehicle, config.ENTER_START_NEAR_FRAC, from_start=True
+        person, vehicle, config.NEAR_OTHER_FRAC, from_start=True
     )
     dies_at_door = bool(door) and door_idxs[-1] >= person.end_frame - 1
     is_door_enter = (
         door_dwell >= config.MIN_DOOR_ENTER_FRAMES
         and person_ends_during_vehicle
         and dies_at_door
-        and start_door_frac <= 0.25
+        and start_door_frac <= config.NEAR_OTHER_FRAC
         and gap_trend < -5.0
         # Only when overlap-near never fired (truncated vehicle box case).
         and dwell < config.MIN_DWELL_FRAMES
@@ -443,7 +442,10 @@ def _classify_pair(
         evidence["door_gap_trend"] = round(gap_trend, 3)
         evidence["start_door_frac"] = round(start_door_frac, 3)
         evidence["track_terminated_near"] = True
-        conf = 0.55 + 0.2 * min(
+        # Base ≥ MIN_INTERACTION_CONFIDENCE so real truncated-box boarding
+        # still reaches Qwen; weak door-side FPs are filtered by VLM standing
+        # / walk-by labels instead of the geometry conf gate alone.
+        conf = 0.8 + 0.15 * min(
             1.0, door_dwell / (2 * config.MIN_DOOR_ENTER_FRAMES)
         )
         return Interaction(
@@ -477,18 +479,25 @@ def _classify_pair(
         )
 
     # --- enter: approaches, nearness at end, track dies near vehicle -------
+    # Require end-near > start-near so a track that is near for its whole life
+    # (door-loitering / fragment) is not labeled boarding from approach alone.
+    # Min dwell blocks short curb fragments that Qwen then labels "loading".
     is_enter = (
         person_ends_during_vehicle
         and last_person_near
+        and dwell >= config.MIN_ENTER_DWELL_FRAMES
         and end_near_frac >= config.ENTER_MIN_END_NEAR_RATIO
         and late_start_near <= end_near_frac
-        and (approaching or end_near_frac > start_near_frac)
+        and end_near_frac > start_near_frac
     )
 
     # --- exit: appears near already-present vehicle, then leaves -----------
+    # Short exits (≤ MIN_DWELL) are usually ID fragments that Qwen then
+    # hallucinates as trunk/door contact; require a bit more dwell.
     is_exit = (
         vehicle_present_at_person_start
         and first_person_near
+        and dwell >= config.INTERACTING_MIN_DWELL_FRAMES
         and start_near_frac >= 0.5
         and early_end_near <= start_near_frac
         and (leaving or start_near_frac > end_near_frac)
@@ -513,20 +522,22 @@ def _classify_pair(
             1.0, dwell / (2 * config.MIN_DWELL_FRAMES)
         )
     elif (
-        # Sustained contact: longer near-span + moderate overlap.
+        # Sustained contact: longer near-span + real box overlap.
+        # Containment-only (tiny person inside huge vehicle box, IoU≈0) is the
+        # main curb walk-by FP mode on gt1125_06.
         dwell >= config.INTERACTING_MIN_DWELL_FRAMES
+        and peak_iou >= config.INTERACTING_MIN_PEAK_IOU
         and (
             peak_containment >= config.INTERACTING_MIN_PEAK_CONTAINMENT
-            or peak_iou >= config.INTERACTING_MIN_PEAK_IOU
+            or peak_iou >= config.INTERACTING_STRONG_PEAK_IOU
         )
     ) or (
         # Short but tight contact: grab/unload/take item from vehicle.
-        # Track IDs often fragment these actions, so dwell alone is unreliable.
+        # Require containment AND IoU — containment alone fires on walk-bys
+        # beside oversized/truncated vehicle boxes.
         dwell >= config.MIN_DWELL_FRAMES
-        and (
-            peak_containment >= config.INTERACTING_STRONG_PEAK_CONTAINMENT
-            or peak_iou >= config.INTERACTING_STRONG_PEAK_IOU
-        )
+        and peak_containment >= config.INTERACTING_STRONG_PEAK_CONTAINMENT
+        and peak_iou >= config.INTERACTING_STRONG_PEAK_IOU
     ):
         # No boarding/alighting signature, but enough contact for a VLM look.
         # Qwen must confirm or it is filtered as passing_by.

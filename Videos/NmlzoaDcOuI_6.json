@@ -1,0 +1,19 @@
+{
+  "clip_id": "NmlzoaDcOuI_6",
+  "interactions": [
+    {
+      "interaction_id": 1,
+      "type": "exit",
+      "time_span_s": [0, 2],
+      "vehicle_type": "car",
+      "notes": "A man exits the car"
+    },
+    {
+      "interaction_id": 2,
+      "type": "enter",
+      "time_span_s": [11.5, 12.5],
+      "vehicle_type": "car",
+      "notes": "A woman enters the red car at the curb"
+    }
+  ]
+}

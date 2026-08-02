@@ -1,0 +1,174 @@
+{
+  "clip_id": "HIu4lM4B8hA_1",
+  "video_metadata": {
+    "fps": 25.0,
+    "frame_count": 250,
+    "resolution": [
+      352,
+      288
+    ],
+    "duration_s": 10.0
+  },
+  "interactions": [
+    {
+      "interaction_id": 1,
+      "type": "enter",
+      "connection": "The person is boarding the vehicle, leaning into the cabin.",
+      "person": {
+        "track_id": 139,
+        "description": "A person wearing a dark-colored shirt and jeans, possibly in their 30s, with no noticeable accessories.",
+        "representative_bbox": [
+          83.3,
+          14.7,
+          57.9,
+          110.9
+        ]
+      },
+      "vehicle": {
+        "track_id": 105,
+        "type": "car",
+        "description": "A white sedan with a black roof and a black rearview mirror."
+      },
+      "frame_range": [
+        76,
+        101
+      ],
+      "time_span_s": [
+        3.04,
+        4.04
+      ],
+      "confidence": 0.961,
+      "evidence": {
+        "peak_containment": 0.923,
+        "peak_iou": 0.108,
+        "dwell_frames": 9,
+        "door_dwell_frames": 0,
+        "track_terminated_near": true,
+        "track_started_near": true,
+        "containment_trend": 0.598,
+        "distance_trend": -7.598,
+        "start_near_frac": 0.75,
+        "end_near_frac": 1.0,
+        "type_scores": {
+          "enter": 6.0
+        },
+        "appearance_person_frame": 76,
+        "appearance_vehicle_frame": 76,
+        "heuristic_type": "enter",
+        "vlm_type": "enter",
+        "explanation": "Kept as action=enter because weighted TYPE=enter (votes enter×3; scores enter=6.0; geometry prior=enter) and described the action as: \"boarding\". Geometry proposed type=enter (dwell_frames=9, peak_containment=0.923). The action label comes from Qwen + geometry.",
+        "action": "enter",
+        "action_detail": "boarding",
+        "qwen_connection": "The person is boarding the vehicle, leaning into the cabin.",
+        "qwen_votes": [
+          {
+            "frame": 76,
+            "type": "enter",
+            "action": "boarding",
+            "connection": "The person is entering the vehicle, leaning into the cabin, and is likely getting into the vehicle."
+          },
+          {
+            "frame": 97,
+            "type": "enter",
+            "action": "boarding",
+            "connection": "The person is boarding the vehicle, leaning into the cabin."
+          },
+          {
+            "frame": 101,
+            "type": "enter",
+            "action": "boarding",
+            "connection": "The person is boarding the vehicle, leaning into the cabin."
+          }
+        ]
+      }
+    },
+    {
+      "interaction_id": 2,
+      "type": "exit",
+      "connection": "The person is alighting from the vehicle, indicating they are entering the vehicle.",
+      "person": {
+        "track_id": 149,
+        "description": "A young woman with long hair, wearing a black top and jeans, with a subtle smile.",
+        "representative_bbox": [
+          138.6,
+          87.0,
+          72.9,
+          127.6
+        ]
+      },
+      "vehicle": {
+        "track_id": 105,
+        "type": "car",
+        "description": "A white sedan with tinted windows."
+      },
+      "frame_range": [
+        110,
+        166
+      ],
+      "time_span_s": [
+        4.4,
+        6.64
+      ],
+      "confidence": 0.958,
+      "evidence": {
+        "peak_containment": 0.832,
+        "peak_iou": 0.325,
+        "dwell_frames": 20,
+        "door_dwell_frames": 0,
+        "track_terminated_near": false,
+        "track_started_near": true,
+        "containment_trend": -0.261,
+        "distance_trend": 17.217,
+        "start_near_frac": 0.944,
+        "end_near_frac": 0.167,
+        "merged_from": [
+          {
+            "person_id": 129,
+            "vehicle_id": 105,
+            "time_span_s": [
+              2.24,
+              4.24
+            ],
+            "confidence": 0.99,
+            "dwell_frames": 15
+          }
+        ],
+        "merge_count": 2,
+        "type_scores": {
+          "interacting": 1.0,
+          "enter": 2.5,
+          "exit": 2.5
+        },
+        "appearance_person_frame": 116,
+        "appearance_vehicle_frame": 110,
+        "heuristic_type": "exit",
+        "vlm_type": "enter",
+        "vlm_enter_exit_overridden": true,
+        "explanation": "Kept as action=exit because geometry classified exit (dwell_frames=20, peak_containment=0.832), while aggregation gave weighted TYPE=enter (votes enter×2, interacting×1; scores enter=2.5, exit=2.5, interacting=1.0; geometry prior=exit) with \"alighting / getting out of the vehicle\". Enter/exit direction uses the geometric track signature when it conflicts with Qwen.",
+        "action": "exit",
+        "action_detail": "alighting / getting out of the vehicle",
+        "qwen_connection": "The person is alighting from the vehicle, indicating they are entering the vehicle.",
+        "qwen_votes": [
+          {
+            "frame": 110,
+            "type": "interacting",
+            "action": "loading items into car",
+            "connection": "The person is loading items into the car, indicating an interaction with the vehicle."
+          },
+          {
+            "frame": 116,
+            "type": "enter",
+            "action": "alighting / getting out of the vehicle",
+            "connection": "The person is alighting from the vehicle, indicating they are entering the vehicle."
+          },
+          {
+            "frame": 166,
+            "type": "enter",
+            "action": "alighting / getting out of the vehicle",
+            "connection": "The person is alighting from the vehicle, indicating they are entering the vehicle."
+          }
+        ]
+      }
+    }
+  ]
+}

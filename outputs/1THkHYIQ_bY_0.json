@@ -1,0 +1,110 @@
+{
+  "clip_id": "1THkHYIQ_bY_0",
+  "video_metadata": {
+    "fps": 30.0,
+    "frame_count": 495,
+    "resolution": [
+      1280,
+      720
+    ],
+    "duration_s": 16.5
+  },
+  "interactions": [
+    {
+      "interaction_id": 1,
+      "type": "interacting",
+      "connection": "The person is loading a blanket into the car, indicating an interaction with the vehicle.",
+      "person": {
+        "track_id": 24,
+        "description": "Person is wearing a dark jacket and dark pants, appears to be middle-aged, and has a backpack.",
+        "representative_bbox": [
+          946.7,
+          264.6,
+          103.0,
+          250.6
+        ]
+      },
+      "vehicle": {
+        "track_id": 30,
+        "type": "motorcycle",
+        "description": "A silver car with a white tarp covering the back."
+      },
+      "frame_range": [
+        84,
+        153
+      ],
+      "time_span_s": [
+        2.8,
+        5.1
+      ],
+      "confidence": 0.803,
+      "evidence": {
+        "peak_containment": 0.976,
+        "peak_iou": 0.462,
+        "dwell_frames": 8,
+        "door_dwell_frames": 0,
+        "track_terminated_near": false,
+        "track_started_near": false,
+        "containment_trend": 0.563,
+        "distance_trend": -90.658,
+        "start_near_frac": 0.147,
+        "end_near_frac": 0.0,
+        "proposal_reason": "strong_short_contact_no_enter_exit",
+        "merged_from": [
+          {
+            "person_id": 21,
+            "vehicle_id": 14,
+            "time_span_s": [
+              1.633,
+              1.9
+            ],
+            "confidence": 0.705,
+            "dwell_frames": 5
+          },
+          {
+            "person_id": 24,
+            "vehicle_id": 14,
+            "time_span_s": [
+              2.033,
+              2.967
+            ],
+            "confidence": 0.762,
+            "dwell_frames": 6
+          }
+        ],
+        "merge_count": 3,
+        "type_scores": {
+          "interacting": 5.0
+        },
+        "appearance_person_frame": 153,
+        "appearance_vehicle_frame": 126,
+        "heuristic_type": "interacting",
+        "vlm_type": "interacting",
+        "explanation": "Kept as action=interacting because weighted TYPE=interacting (votes interacting×3; scores interacting=5.0; geometry prior=interacting) and described the action as: \"loading blanket into car\". Geometry proposed type=interacting (dwell_frames=8, peak_containment=0.976). The action label comes from Qwen + geometry.",
+        "action": "interacting",
+        "action_detail": "loading blanket into car",
+        "qwen_connection": "The person is loading a blanket into the car, indicating an interaction with the vehicle.",
+        "qwen_votes": [
+          {
+            "frame": 84,
+            "type": "interacting",
+            "action": "loading/unloading items",
+            "connection": "The person is interacting with the vehicle by loading or unloading items, which is a sustained contact at a door/trunk."
+          },
+          {
+            "frame": 126,
+            "type": "interacting",
+            "action": "loading blanket into car",
+            "connection": "The person is interacting with the vehicle by loading a blanket into it."
+          },
+          {
+            "frame": 153,
+            "type": "interacting",
+            "action": "loading blanket into car",
+            "connection": "The person is loading a blanket into the car, indicating an interaction with the vehicle."
+          }
+        ]
+      }
+    }
+  ]
+}

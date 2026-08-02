@@ -1,0 +1,19 @@
+{
+  "clip_id": "HIu4lM4B8hA_1",
+  "interactions": [
+    {
+      "interaction_id": 1,
+      "type": "exit",
+      "time_span_s": [0, 6],
+      "vehicle_type": "car",
+      "notes": "A woman exits the car and checks the baggage"
+    },
+    {
+      "interaction_id": 2,
+      "type": "enter",
+      "time_span_s": [3, 4],
+      "vehicle_type": "car",
+      "notes": "A man enters the car"
+    }
+  ]
+}

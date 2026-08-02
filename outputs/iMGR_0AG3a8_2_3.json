@@ -1,0 +1,87 @@
+{
+  "clip_id": "iMGR_0AG3a8_2_3",
+  "video_metadata": {
+    "fps": 6.667,
+    "frame_count": 182,
+    "resolution": [
+      960,
+      720
+    ],
+    "duration_s": 27.299
+  },
+  "interactions": [
+    {
+      "interaction_id": 1,
+      "type": "interacting",
+      "connection": "The person is interacting with the vehicle by opening the trunk, which is a common action when loading or unloading items.",
+      "person": {
+        "track_id": 1215,
+        "description": "A person wearing a pink outfit, possibly a child, with no accessories visible.",
+        "representative_bbox": [
+          111.0,
+          284.2,
+          43.7,
+          72.4
+        ]
+      },
+      "vehicle": {
+        "track_id": 1087,
+        "type": "truck",
+        "description": "A white car with a yellow roof."
+      },
+      "frame_range": [
+        122,
+        176
+      ],
+      "time_span_s": [
+        18.299,
+        26.399
+      ],
+      "confidence": 0.805,
+      "evidence": {
+        "peak_containment": 0.682,
+        "peak_iou": 0.074,
+        "dwell_frames": 36,
+        "door_dwell_frames": 0,
+        "track_terminated_near": true,
+        "track_started_near": true,
+        "containment_trend": 0.016,
+        "distance_trend": 1.579,
+        "start_near_frac": 1.0,
+        "end_near_frac": 1.0,
+        "proposal_reason": "sustained_proximity_no_enter_exit",
+        "type_scores": {
+          "interacting": 5.0
+        },
+        "appearance_person_frame": 176,
+        "appearance_vehicle_frame": 143,
+        "heuristic_type": "interacting",
+        "vlm_type": "interacting",
+        "explanation": "Kept as action=interacting because weighted TYPE=interacting (votes interacting×3; scores interacting=5.0; geometry prior=interacting) and described the action as: \"opening trunk\". Geometry proposed type=interacting (dwell_frames=36, peak_containment=0.682). The action label comes from Qwen + geometry.",
+        "action": "interacting",
+        "action_detail": "opening trunk",
+        "qwen_connection": "The person is interacting with the vehicle by opening the trunk, which is a common action when loading or unloading items.",
+        "qwen_votes": [
+          {
+            "frame": 122,
+            "type": "interacting",
+            "action": "entering driver door",
+            "connection": "The person is entering the driver's door of the vehicle, indicating an interaction with the vehicle."
+          },
+          {
+            "frame": 143,
+            "type": "interacting",
+            "action": "opening trunk",
+            "connection": "The person is interacting with the vehicle by opening the trunk, which is a common action when loading or unloading items."
+          },
+          {
+            "frame": 176,
+            "type": "interacting",
+            "action": "loading items into the vehicle",
+            "connection": "The person is loading items into the vehicle, indicating an interaction with the vehicle."
+          }
+        ]
+      }
+    }
+  ]
+}

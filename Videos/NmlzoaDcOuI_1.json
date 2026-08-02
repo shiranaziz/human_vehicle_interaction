@@ -1,0 +1,26 @@
+{
+  "clip_id": "NmlzoaDcOuI_1",
+  "interactions": [
+    {
+      "interaction_id": 1,
+      "type": "exit",
+      "time_span_s": [2, 3],
+      "vehicle_type": "car",
+      "notes": "A woman exits the car"
+    },
+    {
+      "interaction_id": 2,
+      "type": "exit",
+      "time_span_s": [3, 13],
+      "vehicle_type": "car",
+      "notes": "A woman exits the car"
+    },
+    {
+      "interaction_id": 3,
+      "type": "enter",
+      "time_span_s": [12, 13],
+      "vehicle_type": "car",
+      "notes": "A woman enters the car"
+    }
+  ]
+}

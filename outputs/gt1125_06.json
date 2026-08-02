@@ -1,0 +1,161 @@
+{
+  "clip_id": "gt1125_06",
+  "video_metadata": {
+    "fps": 29.97,
+    "frame_count": 600,
+    "resolution": [
+      3840,
+      2160
+    ],
+    "duration_s": 20.02
+  },
+  "interactions": [
+    {
+      "interaction_id": 1,
+      "type": "enter",
+      "connection": "The person is getting into the vehicle, indicating an enter action.",
+      "person": {
+        "track_id": 303,
+        "description": "A person with short hair, wearing a dark-colored top and dark pants. The person is not wearing any accessories.",
+        "representative_bbox": [
+          1882.7,
+          1115.8,
+          48.6,
+          87.2
+        ]
+      },
+      "vehicle": {
+        "track_id": 299,
+        "type": "car",
+        "description": "A white Ford Ecosport."
+      },
+      "frame_range": [
+        191,
+        271
+      ],
+      "time_span_s": [
+        6.373,
+        9.042
+      ],
+      "confidence": 0.977,
+      "evidence": {
+        "peak_containment": 0.909,
+        "peak_iou": 0.084,
+        "dwell_frames": 64,
+        "door_dwell_frames": 20,
+        "track_terminated_near": true,
+        "track_started_near": false,
+        "containment_trend": 0.388,
+        "distance_trend": -32.043,
+        "start_near_frac": 0.0,
+        "end_near_frac": 0.696,
+        "type_scores": {
+          "passing_by": 1.0,
+          "enter": 5.0
+        },
+        "appearance_person_frame": 270,
+        "appearance_vehicle_frame": 270,
+        "heuristic_type": "enter",
+        "vlm_type": "enter",
+        "explanation": "Kept as action=enter because weighted TYPE=enter (votes enter×2, passing_by×1; scores enter=5.0, passing_by=1.0; geometry prior=enter) and described the action as: \"getting into the vehicle\". Geometry proposed type=enter (dwell_frames=64, peak_containment=0.909). The action label comes from Qwen + geometry.",
+        "action": "enter",
+        "action_detail": "getting into the vehicle",
+        "qwen_connection": "The person is getting into the vehicle, indicating an enter action.",
+        "qwen_votes": [
+          {
+            "frame": 191,
+            "type": "passing_by",
+            "action": "standing near",
+            "connection": "The person is standing near the vehicle without any clear enter/exit or trunk/object contact, indicating a sustained interaction near the vehicle."
+          },
+          {
+            "frame": 270,
+            "type": "enter",
+            "action": "getting into the vehicle",
+            "connection": "The person is getting into the vehicle, indicating an enter action."
+          },
+          {
+            "frame": 271,
+            "type": "enter",
+            "action": "boarding",
+            "connection": "The person is boarding the vehicle, entering the cabin."
+          }
+        ]
+      }
+    },
+    {
+      "interaction_id": 2,
+      "type": "enter",
+      "connection": "entering the vehicle",
+      "person": {
+        "track_id": 582,
+        "description": "A person wearing a green shirt and jeans, standing on a green structure.",
+        "representative_bbox": [
+          1519.3,
+          1208.2,
+          130.1,
+          150.4
+        ]
+      },
+      "vehicle": {
+        "track_id": 597,
+        "type": "truck",
+        "description": "Green and yellow truck"
+      },
+      "frame_range": [
+        303,
+        466
+      ],
+      "time_span_s": [
+        10.11,
+        15.549
+      ],
+      "confidence": 0.99,
+      "evidence": {
+        "peak_containment": 1.0,
+        "peak_iou": 0.137,
+        "dwell_frames": 66,
+        "door_dwell_frames": 0,
+        "track_terminated_near": true,
+        "track_started_near": false,
+        "containment_trend": 0.66,
+        "distance_trend": -56.995,
+        "start_near_frac": 0.0,
+        "end_near_frac": 1.0,
+        "type_scores": {
+          "interacting": 3.5,
+          "enter": 2.5
+        },
+        "appearance_person_frame": 466,
+        "appearance_vehicle_frame": 381,
+        "heuristic_type": "enter",
+        "vlm_type": "interacting",
+        "vlm_interacting_overridden": true,
+        "explanation": "Kept as action=interacting because weighted TYPE=interacting (votes interacting×3; scores enter=2.5, interacting=3.5; geometry prior=enter) and described the action as: \"entering the vehicle\". Geometry proposed type=enter (dwell_frames=66, peak_containment=1.0). The action label comes from Qwen + geometry.",
+        "action": "enter",
+        "action_detail": "entering the vehicle",
+        "qwen_connection": "entering the vehicle",
+        "qwen_votes": [
+          {
+            "frame": 303,
+            "type": "interacting",
+            "action": "opening trunk",
+            "connection": "The person is opening the trunk of the vehicle, indicating an interaction with the vehicle."
+          },
+          {
+            "frame": 381,
+            "type": "interacting",
+            "action": "loading items into the vehicle",
+            "connection": "The person is loading items into the vehicle, indicating an interaction with the vehicle."
+          },
+          {
+            "frame": 466,
+            "type": "interacting",
+            "action": "loading / unloading items",
+            "connection": "The person is loading or unloading items from the vehicle."
+          }
+        ]
+      }
+    }
+  ]
+}

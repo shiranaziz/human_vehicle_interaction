@@ -1,0 +1,165 @@
+{
+  "clip_id": "NmlzoaDcOuI_6",
+  "video_metadata": {
+    "fps": 6.0,
+    "frame_count": 102,
+    "resolution": [
+      1280,
+      720
+    ],
+    "duration_s": 17.0
+  },
+  "interactions": [
+    {
+      "interaction_id": 1,
+      "type": "exit",
+      "connection": "exiting the vehicle",
+      "person": {
+        "track_id": 240,
+        "description": "A man wearing a green t-shirt, black shorts, black shoes, and a black wallet. He appears to be in his late 20s to early 30s.",
+        "representative_bbox": [
+          355.7,
+          148.8,
+          151.6,
+          331.1
+        ]
+      },
+      "vehicle": {
+        "track_id": 175,
+        "type": "car",
+        "description": "A red Toyota Camry sedan."
+      },
+      "frame_range": [
+        1,
+        42
+      ],
+      "time_span_s": [
+        0.167,
+        7.0
+      ],
+      "confidence": 0.99,
+      "evidence": {
+        "peak_containment": 1.0,
+        "peak_iou": 0.304,
+        "dwell_frames": 42,
+        "door_dwell_frames": 7,
+        "track_terminated_near": false,
+        "track_started_near": true,
+        "containment_trend": -0.159,
+        "distance_trend": -3.06,
+        "start_near_frac": 1.0,
+        "end_near_frac": 0.316,
+        "type_scores": {
+          "enter": 2.5,
+          "passing_by": 1.0,
+          "exit": 2.5
+        },
+        "appearance_person_frame": 42,
+        "appearance_vehicle_frame": 42,
+        "heuristic_type": "exit",
+        "vlm_type": "enter",
+        "vlm_enter_exit_overridden": true,
+        "explanation": "Kept as action=exit because geometry classified exit (dwell_frames=42, peak_containment=1.0), while aggregation gave weighted TYPE=enter (votes enter×2, passing_by×1; scores enter=2.5, exit=2.5, passing_by=1.0; geometry prior=exit) with \"exiting the vehicle\". Enter/exit direction uses the geometric track signature when it conflicts with Qwen.",
+        "action": "exit",
+        "action_detail": "exiting the vehicle",
+        "qwen_connection": "exiting the vehicle",
+        "qwen_votes": [
+          {
+            "frame": 1,
+            "type": "enter",
+            "action": "alighting",
+            "connection": "The person is alighting from the vehicle, stepping out of the car."
+          },
+          {
+            "frame": 13,
+            "type": "enter",
+            "action": "getting into the car",
+            "connection": "The person is getting into the car, indicating they are entering the vehicle."
+          },
+          {
+            "frame": 42,
+            "type": "passing_by",
+            "action": "standing near",
+            "connection": "The person is standing near the red car, possibly interacting with it or waiting for something."
+          }
+        ]
+      }
+    },
+    {
+      "interaction_id": 2,
+      "type": "enter",
+      "connection": "The person is boarding the vehicle, entering the cabin.",
+      "person": {
+        "track_id": 254,
+        "description": "A man in a white shirt and sunglasses, possibly middle-aged, with a red shirt and a watch on his wrist.",
+        "representative_bbox": [
+          1142.3,
+          0.3,
+          68.7,
+          159.6
+        ]
+      },
+      "vehicle": {
+        "track_id": 175,
+        "type": "car",
+        "description": "A red Toyota Camry with white accents."
+      },
+      "frame_range": [
+        71,
+        73
+      ],
+      "time_span_s": [
+        11.833,
+        12.167
+      ],
+      "confidence": 0.875,
+      "evidence": {
+        "peak_containment": 0.0,
+        "peak_iou": 0.0,
+        "dwell_frames": 0,
+        "door_dwell_frames": 3,
+        "track_terminated_near": true,
+        "track_started_near": false,
+        "containment_trend": 0.0,
+        "distance_trend": -28.771,
+        "start_near_frac": 0.0,
+        "end_near_frac": 0.0,
+        "proposal_reason": "door_side_boarding_truncated_vehicle",
+        "door_gap_trend": -18.957,
+        "start_door_frac": 0.0,
+        "type_scores": {
+          "enter": 5.0,
+          "passing_by": 1.0
+        },
+        "appearance_person_frame": 72,
+        "appearance_vehicle_frame": 72,
+        "heuristic_type": "enter",
+        "vlm_type": "enter",
+        "explanation": "Kept as action=enter because weighted TYPE=enter (votes enter×2, passing_by×1; scores enter=5.0, passing_by=1.0; geometry prior=enter) and described the action as: \"boarding\". Geometry proposed type=enter (dwell_frames=0, peak_containment=0.0). The action label comes from Qwen + geometry.",
+        "action": "enter",
+        "action_detail": "boarding",
+        "qwen_connection": "The person is boarding the vehicle, entering the cabin.",
+        "qwen_votes": [
+          {
+            "frame": 71,
+            "type": "enter",
+            "action": "boarding",
+            "connection": "The person is boarding the vehicle, entering the cabin."
+          },
+          {
+            "frame": 72,
+            "type": "passing_by",
+            "action": "walking past",
+            "connection": "The person is walking past the car, indicating they are not boarding or alighting the vehicle."
+          },
+          {
+            "frame": 73,
+            "type": "enter",
+            "action": "boarding",
+            "connection": "The person is boarding the vehicle, entering the cabin."
+          }
+        ]
+      }
+    }
+  ]
+}

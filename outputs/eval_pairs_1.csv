@@ -1,0 +1,20 @@
+clip_id,gt_interaction_id,pred_interaction_id,gt_type,pred_type,type_ok,iou,gt_t0,gt_t1,pred_t0,pred_t1,gt_notes,pred_connection,pred_action_detail,desc_score,desc_reason,match_status
+1THkHYIQ_bY_0,1,1,interacting,interacting,True,0.2875,0.0,8.0,2.8,5.1,A man takes a blanket off the car,"The person is loading a blanket into the car, indicating an interaction with the vehicle.",loading blanket into car,,,matched
+HIu4lM4B8hA_1,2,1,enter,enter,True,0.9231,3.0,4.0,3.04,4.04,A man enters the car,"The person is boarding the vehicle, leaning into the cabin.",boarding,,,matched
+HIu4lM4B8hA_1,1,2,exit,exit,True,0.2410,0.0,6.0,4.4,6.64,A woman exits the car and checks the baggage,exiting the vehicle,exiting the vehicle,,,matched
+NmlzoaDcOuI_1,2,2,exit,enter,False,0.3692,3.0,13.0,9.0,13.833,A woman exits the car,entering the vehicle,entering the vehicle,,,matched
+NmlzoaDcOuI_1,1,1,exit,enter,False,0.2500,2.0,3.0,2.0,6.0,A woman exits the car,entering the vehicle,entering the vehicle,,,matched
+NmlzoaDcOuI_1,3,3,enter,interacting,False,0.2400,12.0,13.0,9.5,13.667,A woman enters the car,"The person is interacting with the vehicle by opening the trunk, which is a common action when loading or unloading items.",opening trunk,,,matched
+NmlzoaDcOuI_1,,4,,exit,,,,,15.333,17.0,,exiting the vehicle,exiting the vehicle,,,fp
+NmlzoaDcOuI_6,2,2,enter,enter,True,0.3340,11.5,12.5,11.833,12.167,A woman enters the red car at the curb,The person is boarding the red Toyota Camry car.,boarding,,,matched
+NmlzoaDcOuI_6,1,1,exit,exit,True,0.2619,0.0,2.0,0.167,7.0,A man exits the car,exiting the vehicle,exiting the vehicle,,,matched
+NmlzoaDcOuI_6,,3,,interacting,,,,,12.833,15.0,,"The person is standing at the door, possibly waiting or observing something, indicating a sustained contact at a door.",standing at door,,,fp
+NmlzoaDcOuI_6,,4,,exit,,,,,13.5,14.667,,exiting the vehicle,exiting the vehicle,,,fp
+gt1125_06,2,3,enter,enter,True,0.5208,10.0,13.0,10.11,15.549,A man enters the car,entering the vehicle,entering the vehicle,,,matched
+gt1125_06,1,1,enter,enter,True,0.4413,7.0,11.0,6.373,9.042,A man enters the car,"The person is getting into the vehicle, indicating an interaction with the vehicle.",getting into the vehicle,,,matched
+gt1125_06,,2,,interacting,,,,,7.741,7.941,,The person is interacting with the vehicle by opening the trunk.,opening trunk,,,fp
+gt1125_06,,4,,exit,,,,,11.211,11.378,,exiting the vehicle,exiting the vehicle,,,fp
+gt1125_06,,5,,interacting,,,,,14.114,14.514,,"The person is interacting with the vehicle by loading or unloading items, which is not a boarding or alighting action.",loading/unloading items,,,fp
+gt1125_06,,6,,enter,,,,,16.817,17.217,,"The person is standing at the door of the vehicle, possibly interacting with it or preparing to enter or exit.",entering the vehicle,,,fp
+gt1125_06,,7,,enter,,,,,18.685,19.853,,entering the vehicle,entering the vehicle,,,fp
+gt1125_06,,8,,enter,,,,,19.887,19.987,,entering the vehicle,entering the vehicle,,,fp

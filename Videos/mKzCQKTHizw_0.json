@@ -1,0 +1,12 @@
+{
+  "clip_id": "mKzCQKTHizw_0",
+  "interactions": [
+    {
+      "interaction_id": 1,
+      "type": "enter",
+      "time_span_s": [9, 9],
+      "vehicle_type": "car",
+      "notes": "A woman enters the car"
+    }
+  ]
+}

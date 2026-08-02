@@ -1,0 +1,609 @@
+{
+  "iou_threshold": 0.2,
+  "ran_llm_judge": false,
+  "summary": {
+    "rank1_detection": {
+      "tp": 10,
+      "fp": 9,
+      "fn": 0,
+      "precision": 0.5263,
+      "recall": 1.0,
+      "f1": 0.6897
+    },
+    "rank2_type": {
+      "n_matched": 10,
+      "n_correct": 7,
+      "accuracy": 0.7,
+      "confusion": {
+        "enter": {
+          "enter": 4,
+          "exit": 0,
+          "interacting": 1
+        },
+        "exit": {
+          "enter": 2,
+          "exit": 2,
+          "interacting": 0
+        },
+        "interacting": {
+          "enter": 0,
+          "exit": 0,
+          "interacting": 1
+        }
+      }
+    },
+    "rank3_description_all_tp": {
+      "n_scored": 0,
+      "mean_raw": 0.0,
+      "mean_normalized": 0.0,
+      "histogram": {
+        "0": 0,
+        "1": 0,
+        "2": 0
+      }
+    },
+    "rank3_description_type_correct": {
+      "n_scored": 0,
+      "mean_raw": 0.0,
+      "mean_normalized": 0.0,
+      "histogram": {
+        "0": 0,
+        "1": 0,
+        "2": 0
+      }
+    },
+    "n_clips": 5,
+    "n_matched_pairs": 10
+  },
+  "clips": [
+    {
+      "clip_id": "1THkHYIQ_bY_0",
+      "detection": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "type": {
+        "n_matched": 1,
+        "n_correct": 1,
+        "accuracy": 1.0,
+        "confusion": {
+          "enter": {
+            "enter": 0,
+            "exit": 0,
+            "interacting": 0
+          },
+          "exit": {
+            "enter": 0,
+            "exit": 0,
+            "interacting": 0
+          },
+          "interacting": {
+            "enter": 0,
+            "exit": 0,
+            "interacting": 1
+          }
+        }
+      },
+      "description": {
+        "n_scored": 0,
+        "mean_raw": 0.0,
+        "mean_normalized": 0.0,
+        "histogram": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        }
+      },
+      "n_unmatched_gt": 0,
+      "n_unmatched_pred": 0,
+      "pairs": [
+        {
+          "clip_id": "1THkHYIQ_bY_0",
+          "gt_interaction_id": 1,
+          "pred_interaction_id": 1,
+          "gt_type": "interacting",
+          "pred_type": "interacting",
+          "type_ok": true,
+          "iou": 0.2875,
+          "gt_time_span_s": [
+            0.0,
+            8.0
+          ],
+          "pred_time_span_s": [
+            2.8,
+            5.1
+          ],
+          "gt_notes": "A man takes a blanket off the car",
+          "pred_connection": "The person is loading a blanket into the car, indicating an interaction with the vehicle.",
+          "pred_action_detail": "loading blanket into car",
+          "desc_score": null,
+          "desc_reason": ""
+        }
+      ],
+      "unmatched_gt": [],
+      "unmatched_pred": []
+    },
+    {
+      "clip_id": "HIu4lM4B8hA_1",
+      "detection": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "type": {
+        "n_matched": 2,
+        "n_correct": 2,
+        "accuracy": 1.0,
+        "confusion": {
+          "enter": {
+            "enter": 1,
+            "exit": 0,
+            "interacting": 0
+          },
+          "exit": {
+            "enter": 0,
+            "exit": 1,
+            "interacting": 0
+          },
+          "interacting": {
+            "enter": 0,
+            "exit": 0,
+            "interacting": 0
+          }
+        }
+      },
+      "description": {
+        "n_scored": 0,
+        "mean_raw": 0.0,
+        "mean_normalized": 0.0,
+        "histogram": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        }
+      },
+      "n_unmatched_gt": 0,
+      "n_unmatched_pred": 0,
+      "pairs": [
+        {
+          "clip_id": "HIu4lM4B8hA_1",
+          "gt_interaction_id": 2,
+          "pred_interaction_id": 1,
+          "gt_type": "enter",
+          "pred_type": "enter",
+          "type_ok": true,
+          "iou": 0.9231,
+          "gt_time_span_s": [
+            3.0,
+            4.0
+          ],
+          "pred_time_span_s": [
+            3.04,
+            4.04
+          ],
+          "gt_notes": "A man enters the car",
+          "pred_connection": "The person is boarding the vehicle, leaning into the cabin.",
+          "pred_action_detail": "boarding",
+          "desc_score": null,
+          "desc_reason": ""
+        },
+        {
+          "clip_id": "HIu4lM4B8hA_1",
+          "gt_interaction_id": 1,
+          "pred_interaction_id": 2,
+          "gt_type": "exit",
+          "pred_type": "exit",
+          "type_ok": true,
+          "iou": 0.241,
+          "gt_time_span_s": [
+            0.0,
+            6.0
+          ],
+          "pred_time_span_s": [
+            4.4,
+            6.64
+          ],
+          "gt_notes": "A woman exits the car and checks the baggage",
+          "pred_connection": "exiting the vehicle",
+          "pred_action_detail": "exiting the vehicle",
+          "desc_score": null,
+          "desc_reason": ""
+        }
+      ],
+      "unmatched_gt": [],
+      "unmatched_pred": []
+    },
+    {
+      "clip_id": "NmlzoaDcOuI_1",
+      "detection": {
+        "tp": 3,
+        "fp": 1,
+        "fn": 0,
+        "precision": 0.75,
+        "recall": 1.0,
+        "f1": 0.8571
+      },
+      "type": {
+        "n_matched": 3,
+        "n_correct": 0,
+        "accuracy": 0.0,
+        "confusion": {
+          "enter": {
+            "enter": 0,
+            "exit": 0,
+            "interacting": 1
+          },
+          "exit": {
+            "enter": 2,
+            "exit": 0,
+            "interacting": 0
+          },
+          "interacting": {
+            "enter": 0,
+            "exit": 0,
+            "interacting": 0
+          }
+        }
+      },
+      "description": {
+        "n_scored": 0,
+        "mean_raw": 0.0,
+        "mean_normalized": 0.0,
+        "histogram": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        }
+      },
+      "n_unmatched_gt": 0,
+      "n_unmatched_pred": 1,
+      "pairs": [
+        {
+          "clip_id": "NmlzoaDcOuI_1",
+          "gt_interaction_id": 2,
+          "pred_interaction_id": 2,
+          "gt_type": "exit",
+          "pred_type": "enter",
+          "type_ok": false,
+          "iou": 0.3692,
+          "gt_time_span_s": [
+            3.0,
+            13.0
+          ],
+          "pred_time_span_s": [
+            9.0,
+            13.833
+          ],
+          "gt_notes": "A woman exits the car",
+          "pred_connection": "entering the vehicle",
+          "pred_action_detail": "entering the vehicle",
+          "desc_score": null,
+          "desc_reason": ""
+        },
+        {
+          "clip_id": "NmlzoaDcOuI_1",
+          "gt_interaction_id": 1,
+          "pred_interaction_id": 1,
+          "gt_type": "exit",
+          "pred_type": "enter",
+          "type_ok": false,
+          "iou": 0.25,
+          "gt_time_span_s": [
+            2.0,
+            3.0
+          ],
+          "pred_time_span_s": [
+            2.0,
+            6.0
+          ],
+          "gt_notes": "A woman exits the car",
+          "pred_connection": "entering the vehicle",
+          "pred_action_detail": "entering the vehicle",
+          "desc_score": null,
+          "desc_reason": ""
+        },
+        {
+          "clip_id": "NmlzoaDcOuI_1",
+          "gt_interaction_id": 3,
+          "pred_interaction_id": 3,
+          "gt_type": "enter",
+          "pred_type": "interacting",
+          "type_ok": false,
+          "iou": 0.24,
+          "gt_time_span_s": [
+            12.0,
+            13.0
+          ],
+          "pred_time_span_s": [
+            9.5,
+            13.667
+          ],
+          "gt_notes": "A woman enters the car",
+          "pred_connection": "The person is interacting with the vehicle by opening the trunk, which is a common action when loading or unloading items.",
+          "pred_action_detail": "opening trunk",
+          "desc_score": null,
+          "desc_reason": ""
+        }
+      ],
+      "unmatched_gt": [],
+      "unmatched_pred": [
+        {
+          "interaction_id": 4,
+          "type": "exit",
+          "time_span_s": [
+            15.333,
+            17.0
+          ],
+          "connection": "exiting the vehicle"
+        }
+      ]
+    },
+    {
+      "clip_id": "NmlzoaDcOuI_6",
+      "detection": {
+        "tp": 2,
+        "fp": 2,
+        "fn": 0,
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.6667
+      },
+      "type": {
+        "n_matched": 2,
+        "n_correct": 2,
+        "accuracy": 1.0,
+        "confusion": {
+          "enter": {
+            "enter": 1,
+            "exit": 0,
+            "interacting": 0
+          },
+          "exit": {
+            "enter": 0,
+            "exit": 1,
+            "interacting": 0
+          },
+          "interacting": {
+            "enter": 0,
+            "exit": 0,
+            "interacting": 0
+          }
+        }
+      },
+      "description": {
+        "n_scored": 0,
+        "mean_raw": 0.0,
+        "mean_normalized": 0.0,
+        "histogram": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        }
+      },
+      "n_unmatched_gt": 0,
+      "n_unmatched_pred": 2,
+      "pairs": [
+        {
+          "clip_id": "NmlzoaDcOuI_6",
+          "gt_interaction_id": 2,
+          "pred_interaction_id": 2,
+          "gt_type": "enter",
+          "pred_type": "enter",
+          "type_ok": true,
+          "iou": 0.334,
+          "gt_time_span_s": [
+            11.5,
+            12.5
+          ],
+          "pred_time_span_s": [
+            11.833,
+            12.167
+          ],
+          "gt_notes": "A woman enters the red car at the curb",
+          "pred_connection": "The person is boarding the red Toyota Camry car.",
+          "pred_action_detail": "boarding",
+          "desc_score": null,
+          "desc_reason": ""
+        },
+        {
+          "clip_id": "NmlzoaDcOuI_6",
+          "gt_interaction_id": 1,
+          "pred_interaction_id": 1,
+          "gt_type": "exit",
+          "pred_type": "exit",
+          "type_ok": true,
+          "iou": 0.2619,
+          "gt_time_span_s": [
+            0.0,
+            2.0
+          ],
+          "pred_time_span_s": [
+            0.167,
+            7.0
+          ],
+          "gt_notes": "A man exits the car",
+          "pred_connection": "exiting the vehicle",
+          "pred_action_detail": "exiting the vehicle",
+          "desc_score": null,
+          "desc_reason": ""
+        }
+      ],
+      "unmatched_gt": [],
+      "unmatched_pred": [
+        {
+          "interaction_id": 3,
+          "type": "interacting",
+          "time_span_s": [
+            12.833,
+            15.0
+          ],
+          "connection": "The person is standing at the door, possibly waiting or observing something, indicating a sustained contact at a door."
+        },
+        {
+          "interaction_id": 4,
+          "type": "exit",
+          "time_span_s": [
+            13.5,
+            14.667
+          ],
+          "connection": "exiting the vehicle"
+        }
+      ]
+    },
+    {
+      "clip_id": "gt1125_06",
+      "detection": {
+        "tp": 2,
+        "fp": 6,
+        "fn": 0,
+        "precision": 0.25,
+        "recall": 1.0,
+        "f1": 0.4
+      },
+      "type": {
+        "n_matched": 2,
+        "n_correct": 2,
+        "accuracy": 1.0,
+        "confusion": {
+          "enter": {
+            "enter": 2,
+            "exit": 0,
+            "interacting": 0
+          },
+          "exit": {
+            "enter": 0,
+            "exit": 0,
+            "interacting": 0
+          },
+          "interacting": {
+            "enter": 0,
+            "exit": 0,
+            "interacting": 0
+          }
+        }
+      },
+      "description": {
+        "n_scored": 0,
+        "mean_raw": 0.0,
+        "mean_normalized": 0.0,
+        "histogram": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        }
+      },
+      "n_unmatched_gt": 0,
+      "n_unmatched_pred": 6,
+      "pairs": [
+        {
+          "clip_id": "gt1125_06",
+          "gt_interaction_id": 2,
+          "pred_interaction_id": 3,
+          "gt_type": "enter",
+          "pred_type": "enter",
+          "type_ok": true,
+          "iou": 0.5208,
+          "gt_time_span_s": [
+            10.0,
+            13.0
+          ],
+          "pred_time_span_s": [
+            10.11,
+            15.549
+          ],
+          "gt_notes": "A man enters the car",
+          "pred_connection": "entering the vehicle",
+          "pred_action_detail": "entering the vehicle",
+          "desc_score": null,
+          "desc_reason": ""
+        },
+        {
+          "clip_id": "gt1125_06",
+          "gt_interaction_id": 1,
+          "pred_interaction_id": 1,
+          "gt_type": "enter",
+          "pred_type": "enter",
+          "type_ok": true,
+          "iou": 0.4413,
+          "gt_time_span_s": [
+            7.0,
+            11.0
+          ],
+          "pred_time_span_s": [
+            6.373,
+            9.042
+          ],
+          "gt_notes": "A man enters the car",
+          "pred_connection": "The person is getting into the vehicle, indicating an interaction with the vehicle.",
+          "pred_action_detail": "getting into the vehicle",
+          "desc_score": null,
+          "desc_reason": ""
+        }
+      ],
+      "unmatched_gt": [],
+      "unmatched_pred": [
+        {
+          "interaction_id": 2,
+          "type": "interacting",
+          "time_span_s": [
+            7.741,
+            7.941
+          ],
+          "connection": "The person is interacting with the vehicle by opening the trunk."
+        },
+        {
+          "interaction_id": 4,
+          "type": "exit",
+          "time_span_s": [
+            11.211,
+            11.378
+          ],
+          "connection": "exiting the vehicle"
+        },
+        {
+          "interaction_id": 5,
+          "type": "interacting",
+          "time_span_s": [
+            14.114,
+            14.514
+          ],
+          "connection": "The person is interacting with the vehicle by loading or unloading items, which is not a boarding or alighting action."
+        },
+        {
+          "interaction_id": 6,
+          "type": "enter",
+          "time_span_s": [
+            16.817,
+            17.217
+          ],
+          "connection": "The person is standing at the door of the vehicle, possibly interacting with it or preparing to enter or exit."
+        },
+        {
+          "interaction_id": 7,
+          "type": "enter",
+          "time_span_s": [
+            18.685,
+            19.853
+          ],
+          "connection": "entering the vehicle"
+        },
+        {
+          "interaction_id": 8,
+          "type": "enter",
+          "time_span_s": [
+            19.887,
+            19.987
+          ],
+          "connection": "entering the vehicle"
+        }
+      ]
+    }
+  ]
+}

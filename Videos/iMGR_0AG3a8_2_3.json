@@ -1,0 +1,19 @@
+{
+  "clip_id": "iMGR_0AG3a8_2_3",
+  "interactions": [
+    {
+      "interaction_id": 1,
+      "type": "exit",
+      "time_span_s": [0, 1],
+      "vehicle_type": "car",
+      "notes": "A woman exits the car"
+    },
+    {
+      "interaction_id": 2,
+      "type": "interacting",
+      "time_span_s": [2, 25],
+      "vehicle_type": "car",
+      "notes": "A woman checks the baggage, closes it, opens the door, takes out a child, and closes the door"
+    }
+  ]
+}

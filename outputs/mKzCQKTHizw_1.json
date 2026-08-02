@@ -1,0 +1,87 @@
+{
+  "clip_id": "mKzCQKTHizw_1",
+  "video_metadata": {
+    "fps": 29.97,
+    "frame_count": 276,
+    "resolution": [
+      640,
+      360
+    ],
+    "duration_s": 9.209
+  },
+  "interactions": [
+    {
+      "interaction_id": 1,
+      "type": "enter",
+      "connection": "The person is entering the vehicle, leaning into the cabin.",
+      "person": {
+        "track_id": 1352,
+        "description": "Person is wearing a white shirt and khaki pants. Notable accessory is a black hat.",
+        "representative_bbox": [
+          182.6,
+          0.0,
+          61.6,
+          149.2
+        ]
+      },
+      "vehicle": {
+        "track_id": 1344,
+        "type": "car",
+        "description": "A silver sedan with a black roof."
+      },
+      "frame_range": [
+        121,
+        185
+      ],
+      "time_span_s": [
+        4.037,
+        6.173
+      ],
+      "confidence": 0.99,
+      "evidence": {
+        "peak_containment": 1.0,
+        "peak_iou": 0.19,
+        "dwell_frames": 52,
+        "door_dwell_frames": 0,
+        "track_terminated_near": true,
+        "track_started_near": true,
+        "containment_trend": 0.539,
+        "distance_trend": -21.773,
+        "start_near_frac": 0.75,
+        "end_near_frac": 1.0,
+        "type_scores": {
+          "enter": 5.0,
+          "interacting": 1.0
+        },
+        "appearance_person_frame": 149,
+        "appearance_vehicle_frame": 185,
+        "heuristic_type": "enter",
+        "vlm_type": "enter",
+        "explanation": "Kept as action=enter because weighted TYPE=enter (votes enter×2, interacting×1; scores enter=5.0, interacting=1.0; geometry prior=enter) and described the action as: \"boarding\". Geometry proposed type=enter (dwell_frames=52, peak_containment=1.0). The action label comes from Qwen + geometry.",
+        "action": "enter",
+        "action_detail": "boarding",
+        "qwen_connection": "The person is entering the vehicle, leaning into the cabin.",
+        "qwen_votes": [
+          {
+            "frame": 121,
+            "type": "enter",
+            "action": "getting into the vehicle",
+            "connection": "The person is getting into the vehicle, indicating they are entering the vehicle."
+          },
+          {
+            "frame": 149,
+            "type": "enter",
+            "action": "boarding",
+            "connection": "The person is entering the vehicle, leaning into the cabin."
+          },
+          {
+            "frame": 185,
+            "type": "interacting",
+            "action": "opening trunk",
+            "connection": "The person is interacting with the vehicle by opening the trunk, which is a common action when loading or unloading items."
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,13 +1,11 @@
-# Project-local ByteTrack config (overrides Ultralytics' stock defaults).
-#
-# Lowered from the stock thresholds (high=0.5, new=0.6) so that occluded
-# people — e.g. someone standing inside a car's bounding box — can actually
-# spawn and keep a track instead of being detected and then discarded for
-# lacking a track id. Pair with a modest config.CONF (~0.15).
+# ByteTrack overrides (Ultralytics loads this file as-is — every key below is
+# required; omitting a stock-default key crashes). Values marked (=stock) match
+# ultralytics/cfg/trackers/bytetrack.yaml; the rest are intentional for occluded
+# people next to cars (pair with config.CONF ≈ 0.15).
 tracker_type: bytetrack
-track_high_thresh: 0.25  # threshold for the first association
-track_low_thresh: 0.05   # below this a detection is ignored entirely
-new_track_thresh: 0.25   # conf needed to START a new track (key knob)
-track_buffer: 60         # keep lost tracks alive longer (helps FRAME_STRIDE gaps)
-match_thresh: 0.8        # IoU threshold for matching tracks
-fuse_score: True         # fuse conf scores with IoU distance before matching
+track_high_thresh: 0.25   # stock 0.5 — first association
+track_low_thresh: 0.05    # stock 0.1 — second association floor
+new_track_thresh: 0.25    # stock 0.6 — start a new track (main knob)
+track_buffer: 60          # stock 30 — keep lost tracks longer
+match_thresh: 0.8         # (=stock) IoU match threshold
+fuse_score: True          # (=stock) fuse conf into IoU distance
