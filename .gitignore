@@ -26,3 +26,6 @@ docs/
 
 # Annotated videos are heavy; keep JSON description / eval artifacts.
 outputs/videos/
+
+# Cursor
+.cursor/
